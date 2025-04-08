@@ -1,18 +1,17 @@
-﻿namespace ServiceBusManager
+﻿namespace ServiceBusManager;
+
+public partial class App : Application
 {
-    public partial class App : Application
+    public App()
     {
-        public App()
-        {
-            InitializeComponent();
+        InitializeComponent();
 
-            // Force the app into light or dark mode for debugging
-            UserAppTheme = AppTheme.Light;
-        }
+        // Force the app into light or dark mode for debugging
+        UserAppTheme = AppTheme.Light;
+    }
 
-        protected override Window CreateWindow(IActivationState? activationState)
-        {
-            return new Window(new AppShell());
-        }
+    protected override Window CreateWindow(IActivationState? activationState)
+    {
+        return new Window(new AppShell());
     }
 }
