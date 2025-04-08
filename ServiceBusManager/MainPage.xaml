@@ -3,37 +3,183 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ServiceBusManager.MainPage"
              xmlns:viewmodel="clr-namespace:ServiceBusManager.ViewModels"
-             x:DataType="viewmodel:MainViewModel">
+             x:DataType="viewmodel:MainViewModel"
+             Title="Service Bus Manager">
 
-    <ScrollView>
-        <VerticalStackLayout
-            Padding="30,0"
-            Spacing="25">
-            <Image
-                Source="logo.png"
-                HeightRequest="185"
-                Aspect="AspectFit"
-                SemanticProperties.Description="dot net bot in a hovercraft number nine" />
+    <ContentPage.Resources>
+        <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
+    </ContentPage.Resources>
 
-            <Label
-                Text="{Binding Title}"
-                Style="{StaticResource Headline}"
-                SemanticProperties.HeadingLevel="Level1" />
+    <Grid RowDefinitions="*, 5, Auto" ColumnDefinitions="*, 5, 2*">
+        <!-- Explorer Panel (Top Left) -->
+        <Border Grid.Row="0" Grid.Column="0" Stroke="{StaticResource Gray300Brush}" 
+                StrokeThickness="1" Padding="5" BackgroundColor="{AppThemeBinding Light={StaticResource WhiteBrush}, Dark={StaticResource Gray950Brush}}">
+            <Grid RowDefinitions="Auto, *">
+                <Label Text="Explorer" FontAttributes="Bold" Grid.Row="0" Margin="0,0,0,5"/>
+                <!-- Tree View Using Collection View with Templates -->
+                <CollectionView Grid.Row="1" 
+                                ItemsSource="{Binding Resources}"
+                                SelectionMode="Single"
+                                SelectionChangedCommand="{Binding SelectResourceCommand}"
+                                SelectionChangedCommandParameter="{Binding SelectedItem, Source={RelativeSource Self}}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="viewmodel:ServiceBusResourceItem">
+                            <Grid Padding="5" ColumnDefinitions="Auto, *">
+                                <!-- Text-based indicator based on resource type -->
+                                <Label Grid.Column="0" WidthRequest="24" VerticalOptions="Center">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding Type}" Value="Queue">
+                                            <Setter Property="Text" Value="Q" />
+                                            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Label" Binding="{Binding Type}" Value="Topic">
+                                            <Setter Property="Text" Value="T" />
+                                            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource Gray300}}" />
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Label" Binding="{Binding Type}" Value="Subscription">
+                                            <Setter Property="Text" Value="S" />
+                                            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Tertiary}, Dark={StaticResource Gray400}}" />
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                                
+                                <VerticalStackLayout Grid.Column="1" Spacing="0">
+                                    <Label Text="{Binding Name}" FontAttributes="Bold" />
+                                    
+                                    <!-- Show children if this is a topic with subscriptions -->
+                                    <CollectionView ItemsSource="{Binding Children}" 
+                                                   IsVisible="{Binding Children.Count, Converter={StaticResource CountGreaterThanZeroConverter}}"
+                                                   Margin="15,0,0,0">
+                                        <CollectionView.ItemTemplate>
+                                            <DataTemplate x:DataType="viewmodel:ServiceBusResourceItem">
+                                                <Grid Padding="2" ColumnDefinitions="Auto, *">
+                                                    <Label Grid.Column="0" WidthRequest="24" Text="S" TextColor="{AppThemeBinding Light={StaticResource Tertiary}, Dark={StaticResource Gray400}}" VerticalOptions="Center" />
+                                                    <Label Grid.Column="1" Text="{Binding Name}" />
+                                                </Grid>
+                                            </DataTemplate>
+                                        </CollectionView.ItemTemplate>
+                                    </CollectionView>
+                                </VerticalStackLayout>
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Grid>
+        </Border>
 
-            <Label
-                Text="{Binding Message}"
-                Style="{StaticResource SubHeadline}"
-                SemanticProperties.HeadingLevel="Level2"
-                SemanticProperties.Description="{Binding Message}" />
+        <!-- GridSplitter Column Between Left and Right Panels -->
+        <BoxView Grid.Row="0" Grid.Column="1" 
+                 HorizontalOptions="Fill" 
+                 VerticalOptions="Fill"
+                 WidthRequest="5">
+            <BoxView.GestureRecognizers>
+                <PointerGestureRecognizer x:Name="HorizontalSplitter" />
+            </BoxView.GestureRecognizers>
+        </BoxView>
 
-            <Button
-                x:Name="CounterBtn"
-                Text="{Binding ButtonText}"
-                SemanticProperties.Hint="Counts the number of times you click"
-                Command="{Binding ClickCommand}"
-                HorizontalOptions="Fill" />
-        </VerticalStackLayout>
-    </ScrollView>
+        <!-- Details Panel (Top Right) -->
+        <Border Grid.Row="0" Grid.Column="2" Stroke="{StaticResource Gray300Brush}" 
+                StrokeThickness="1" Padding="5" BackgroundColor="{AppThemeBinding Light={StaticResource WhiteBrush}, Dark={StaticResource Gray950Brush}}">
+            <Grid RowDefinitions="Auto, *">
+                <Label Text="Details" FontAttributes="Bold" Grid.Row="0" Margin="0,0,0,5"/>
+                <ContentView Grid.Row="1" x:Name="DetailsContentView">
+                    <Grid>
+                        <!-- Default view when nothing is selected -->
+                        <VerticalStackLayout IsVisible="{Binding SelectedResource, Converter={StaticResource IsNullConverter}}"
+                                            HorizontalOptions="Center" VerticalOptions="Center">
+                            <Label Text="Select an item in the Explorer to view details" 
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray300}}" />
+                        </VerticalStackLayout>
 
+                        <!-- Details view when a resource is selected -->
+                        <Grid IsVisible="{Binding SelectedResource, Converter={StaticResource IsNotNullConverter}}"
+                              RowDefinitions="Auto, Auto, Auto, *">
+                            <Label Grid.Row="0" Text="{Binding SelectedResource.Name}" FontSize="Large" FontAttributes="Bold" />
+                            <Label Grid.Row="1" Text="{Binding SelectedResource.Type}" />
+                            
+                            <!-- Show parent info for subscriptions -->
+                            <StackLayout Grid.Row="2" Orientation="Horizontal" 
+                                        IsVisible="{Binding SelectedResource.Parent, Converter={StaticResource IsNotNullConverter}}">
+                                <Label Text="Parent Topic: " />
+                                <Label Text="{Binding SelectedResource.Parent}" />
+                            </StackLayout>
+                            
+                            <!-- Additional details will go here -->
+                            <Grid Grid.Row="3" Margin="0,10,0,0" RowDefinitions="Auto, *">
+                                <HorizontalStackLayout Grid.Row="0" Spacing="10">
+                                    <Button Text="Overview" 
+                                            Command="{Binding SelectTabCommand}" 
+                                            CommandParameter="{x:Int32 0}"
+                                            BackgroundColor="{Binding SelectedTabIndex, Converter={StaticResource EqualityToBrushConverter}, ConverterParameter=0}" />
+                                    <Button Text="Messages" 
+                                            Command="{Binding SelectTabCommand}" 
+                                            CommandParameter="{x:Int32 1}"
+                                            BackgroundColor="{Binding SelectedTabIndex, Converter={StaticResource EqualityToBrushConverter}, ConverterParameter=1}" />
+                                    <Button Text="Properties" 
+                                            Command="{Binding SelectTabCommand}" 
+                                            CommandParameter="{x:Int32 2}"
+                                            BackgroundColor="{Binding SelectedTabIndex, Converter={StaticResource EqualityToBrushConverter}, ConverterParameter=2}" />
+                                </HorizontalStackLayout>
+                                <Grid Grid.Row="1" Padding="10" Margin="0,5,0,0">
+                                    <!-- Tab content -->
+                                    <Grid>
+                                        <!-- Overview Tab -->
+                                        <VerticalStackLayout IsVisible="{Binding SelectedTabIndex, Converter={StaticResource EqualityConverter}, ConverterParameter=0}">
+                                            <Label Text="Overview details will go here" />
+                                        </VerticalStackLayout>
+                                        
+                                        <!-- Messages Tab -->
+                                        <VerticalStackLayout IsVisible="{Binding SelectedTabIndex, Converter={StaticResource EqualityConverter}, ConverterParameter=1}">
+                                            <Label Text="Message list will go here" />
+                                        </VerticalStackLayout>
+                                        
+                                        <!-- Properties Tab -->
+                                        <VerticalStackLayout IsVisible="{Binding SelectedTabIndex, Converter={StaticResource EqualityConverter}, ConverterParameter=2}">
+                                            <Label Text="Properties will go here" />
+                                        </VerticalStackLayout>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </ContentView>
+            </Grid>
+        </Border>
 
+        <!-- GridSplitter Row Between Top and Bottom Panels -->
+        <BoxView Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" 
+                 HorizontalOptions="Fill" 
+                 VerticalOptions="Fill"
+                 HeightRequest="5">
+            <BoxView.GestureRecognizers>
+                <PointerGestureRecognizer x:Name="VerticalSplitter" />
+            </BoxView.GestureRecognizers>
+        </BoxView>
+
+        <!-- Logs Panel (Bottom) -->
+        <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Stroke="{StaticResource Gray300Brush}" 
+                StrokeThickness="1" Padding="5" BackgroundColor="{AppThemeBinding Light={StaticResource WhiteBrush}, Dark={StaticResource Gray950Brush}}"
+                IsVisible="{Binding IsLogsVisible}">
+            <Grid RowDefinitions="Auto, *">
+                <Grid Grid.Row="0" ColumnDefinitions="*, Auto, Auto" Margin="0,0,0,5">
+                    <Label Text="Logs" FontAttributes="Bold" Grid.Column="0" VerticalOptions="Center"/>
+                    <Button Text="Clear" Grid.Column="1" HeightRequest="30" WidthRequest="60" 
+                            Command="{Binding ClearLogsCommand}"
+                            FontSize="12" Margin="0,0,5,0"/>
+                    <Button Text="Hide" Grid.Column="2" HeightRequest="30" WidthRequest="60" 
+                            Command="{Binding ToggleLogsCommand}"
+                            FontSize="12" />
+                </Grid>
+                <ScrollView Grid.Row="1">
+                    <CollectionView ItemsSource="{Binding Logs}" HeightRequest="120">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="viewmodel:LogItem">
+                                <Label Text="{Binding FormattedLog}" Padding="2" />
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </ScrollView>
+            </Grid>
+        </Border>
+    </Grid>
 </ContentPage>

@@ -53,7 +53,7 @@ Before running the application locally, ensure you have the following installed:
 4. Run the application:
    
 ```
-   dotnet run
+   dotnet run --project ServiceBusManager --framework net9.0-windows10.0.19041.0
 ```
 
 ## Configuration
