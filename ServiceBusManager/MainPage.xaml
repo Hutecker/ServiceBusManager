@@ -42,7 +42,7 @@
         <Border Grid.Row="0" Grid.Column="0" Stroke="{StaticResource Gray300}"
                 StrokeThickness="1" Padding="5" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}">
             <Grid RowDefinitions="Auto, *">
-                <Label Text="Explorer" FontAttributes="Bold" Grid.Row="0" Margin="0,0,0,5"/>
+                <Label Text="Explorer" FontSize="16" FontAttributes="Bold" Grid.Row="0" Margin="0,0,0,5"/>
                 <!-- Tree View Using Collection View with Templates -->
                 <CollectionView Grid.Row="1" 
                                 ItemsSource="{Binding Resources}"
@@ -106,7 +106,7 @@
         <Border Grid.Row="0" Grid.Column="2" Stroke="{StaticResource Gray300}" 
                 StrokeThickness="1" Padding="5" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}">
             <Grid RowDefinitions="Auto, *">
-                <Label Text="Details" FontAttributes="Bold" Grid.Row="0" Margin="0,0,0,5" VerticalOptions="Center"/>
+                <Label Text="Details" FontSize="16" FontAttributes="Bold" Grid.Row="0" Margin="0,0,0,5" VerticalOptions="Center"/>
                 <ContentView Grid.Row="1" x:Name="DetailsContentView">
                     <Grid>
                         <!-- Default view when nothing is selected -->
@@ -187,8 +187,8 @@
                 <!-- Header Row -->
                 <Grid Grid.Row="0" ColumnDefinitions="*, Auto, Auto">
                     <!-- Logs Label - Always Visible -->
-                    <Label Text="Logs" FontAttributes="Bold" Grid.Column="0" VerticalOptions="Center"/>
-                    
+                    <Label Text="Logs" FontSize="16" FontAttributes="Bold" Grid.Column="0"/>
+                   
                     <!-- Clear Button - Visibility bound -->
                     <Button Text="Clear" Grid.Column="1" WidthRequest="70"
                             Command="{Binding ClearLogsCommand}"
