@@ -36,28 +36,24 @@ Before running the application locally, ensure you have the following installed:
 ```
    git clone https://github.com/Hutecker/ServiceBusManager.git
    cd ServiceBusManager
-   
 ```
 
 2. Restore dependencies:
    
 ```
    dotnet restore
-   
 ```
 
 3. Build the project:
    
 ```
    dotnet build
-   
 ```
 
 4. Run the application:
    
 ```
    dotnet run
-   
 ```
 
 ## Configuration
@@ -71,7 +67,6 @@ Before running the application locally, ensure you have the following installed:
        "ConnectionString": "YourAzureServiceBusConnectionString"
      }
    }
-   
 ```
 
 ## Usage
@@ -96,19 +91,16 @@ Contributions are welcome! Please follow these steps:
    
 ```
    git checkout -b feature/YourFeatureName
-   
 ```
 3. Commit your changes:
    
 ```
    git commit -m "Add your message here"
-   
 ```
 4. Push to the branch:
    
 ```
    git push origin feature/YourFeatureName
-   
 ```
 5. Open a pull request.
 
