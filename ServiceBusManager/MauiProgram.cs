@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using ServiceBusManager.ViewModels;
 
 namespace ServiceBusManager;
 
@@ -15,6 +16,9 @@ public static class MauiProgram
                 fonts.AddFont("Inter-Regular.otf", "InterRegular");
                 fonts.AddFont("Inter-Bold.otf", "InterBold");
             });
+
+        builder.Services.AddSingleton<MainPage>();
+        builder.Services.AddSingleton<MainViewModel>();
 
 #if DEBUG
         builder.Logging.AddDebug();
