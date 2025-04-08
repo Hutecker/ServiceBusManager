@@ -4,8 +4,17 @@
              x:Class="ServiceBusManager.MainPage"
              xmlns:viewmodel="clr-namespace:ServiceBusManager.ViewModels"
              x:DataType="viewmodel:MainViewModel"
-             Title="Service Bus Manager"
              Padding="5">
+
+    <Shell.TitleView>
+        <HorizontalStackLayout VerticalOptions="Center" Spacing="5">
+            <Image Source="icon.png" 
+                   HeightRequest="28" 
+                   Margin="5,0,0,0" 
+                   VerticalOptions="Center" />
+            <Label Text="Service Bus Manager" VerticalOptions="Center" FontSize="Medium" FontAttributes="Bold" />
+        </HorizontalStackLayout>
+    </Shell.TitleView>
 
     <ContentPage.Resources>
         <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
