@@ -15,6 +15,7 @@ public static class MauiProgram
             {
                 fonts.AddFont("Inter-Regular.otf", "InterRegular");
                 fonts.AddFont("Inter-Bold.otf", "InterBold");
+                fonts.AddFont("FluentSystemIcons-Regular.ttf", "FluentSystemIcons");
             });
 
         builder.Services.AddSingleton<MainPage>();

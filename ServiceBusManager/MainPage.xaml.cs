@@ -1,6 +1,4 @@
 ﻿using ServiceBusManager.ViewModels;
-using Microsoft.Maui.Controls;
-using Microsoft.Maui.Graphics;
 
 namespace ServiceBusManager;
 

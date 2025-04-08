@@ -4,7 +4,8 @@
              x:Class="ServiceBusManager.MainPage"
              xmlns:viewmodel="clr-namespace:ServiceBusManager.ViewModels"
              x:DataType="viewmodel:MainViewModel"
-             Title="Service Bus Manager">
+             Title="Service Bus Manager"
+             Padding="5">
 
     <ContentPage.Resources>
         <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
@@ -12,8 +13,8 @@
 
     <Grid RowDefinitions="*, 5, Auto" ColumnDefinitions="*, 5, 2*">
         <!-- Explorer Panel (Top Left) -->
-        <Border Grid.Row="0" Grid.Column="0" Stroke="{StaticResource Gray300Brush}" 
-                StrokeThickness="1" Padding="5" BackgroundColor="{AppThemeBinding Light={StaticResource WhiteBrush}, Dark={StaticResource Gray950Brush}}">
+        <Border Grid.Row="0" Grid.Column="0" Stroke="{StaticResource Gray300}" 
+                StrokeThickness="1" Padding="5" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}">
             <Grid RowDefinitions="Auto, *">
                 <Label Text="Explorer" FontAttributes="Bold" Grid.Row="0" Margin="0,0,0,5"/>
                 <!-- Tree View Using Collection View with Templates -->
@@ -68,20 +69,35 @@
         </Border>
 
         <!-- GridSplitter Column Between Left and Right Panels -->
-        <BoxView Grid.Row="0" Grid.Column="1" 
+        <BoxView Grid.Row="0" Grid.Column="1"
+                 Color="{StaticResource Gray200}"
                  HorizontalOptions="Fill" 
                  VerticalOptions="Fill"
-                 WidthRequest="5">
+                 WidthRequest="1">
             <BoxView.GestureRecognizers>
                 <PointerGestureRecognizer x:Name="HorizontalSplitter" />
             </BoxView.GestureRecognizers>
         </BoxView>
 
         <!-- Details Panel (Top Right) -->
-        <Border Grid.Row="0" Grid.Column="2" Stroke="{StaticResource Gray300Brush}" 
-                StrokeThickness="1" Padding="5" BackgroundColor="{AppThemeBinding Light={StaticResource WhiteBrush}, Dark={StaticResource Gray950Brush}}">
+        <Border Grid.Row="0" Grid.Column="2" Stroke="{StaticResource Gray300}" 
+                StrokeThickness="1" Padding="5" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}">
             <Grid RowDefinitions="Auto, *">
-                <Label Text="Details" FontAttributes="Bold" Grid.Row="0" Margin="0,0,0,5"/>
+                <Grid ColumnDefinitions="*, Auto" Grid.Row="0">
+                    <Label Text="Details" FontAttributes="Bold" Grid.Column="0" Margin="0,0,0,5" VerticalOptions="Center"/>
+                    <!-- Theme Toggle Button -->
+                    <Label Grid.Column="1" 
+                           Text="{Binding ThemeIcon}"
+                           FontFamily="Fluent UI System Icons"
+                           FontSize="20"
+                           Margin="0,0,0,5"
+                           VerticalOptions="Center"
+                           TextColor="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource White}}">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding ToggleThemeCommand}" />
+                        </Label.GestureRecognizers>
+                    </Label>
+                </Grid>
                 <ContentView Grid.Row="1" x:Name="DetailsContentView">
                     <Grid>
                         <!-- Default view when nothing is selected -->
@@ -147,18 +163,19 @@
         </Border>
 
         <!-- GridSplitter Row Between Top and Bottom Panels -->
-        <BoxView Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" 
+        <BoxView Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"
+                 Color="{StaticResource Gray200}"
                  HorizontalOptions="Fill" 
                  VerticalOptions="Fill"
-                 HeightRequest="5">
+                 HeightRequest="1">
             <BoxView.GestureRecognizers>
                 <PointerGestureRecognizer x:Name="VerticalSplitter" />
             </BoxView.GestureRecognizers>
         </BoxView>
 
         <!-- Logs Panel (Bottom) -->
-        <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Stroke="{StaticResource Gray300Brush}" 
-                StrokeThickness="1" Padding="5" BackgroundColor="{AppThemeBinding Light={StaticResource WhiteBrush}, Dark={StaticResource Gray950Brush}}"
+        <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Stroke="{StaticResource Gray300}" 
+                StrokeThickness="1" Padding="5" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}"
                 IsVisible="{Binding IsLogsVisible}">
             <Grid RowDefinitions="Auto, *">
                 <Grid Grid.Row="0" ColumnDefinitions="*, Auto, Auto" Margin="0,0,0,5">

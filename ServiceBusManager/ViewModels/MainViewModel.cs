@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
+using Microsoft.Maui.ApplicationModel;
 
 namespace ServiceBusManager.ViewModels;
 
@@ -24,8 +25,14 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private string[] tabNames = new[] { "Overview", "Messages", "Properties" };
 
+    [ObservableProperty]
+    private string themeIcon = "\uE706"; // Fluent System Icons light mode icon
+
     public MainViewModel()
     {
+        // Initialize theme icon based on current theme
+        UpdateThemeIcon();
+        
         // Add sample data - Replace with actual Service Bus API calls later
         Resources.Add(new ServiceBusResourceItem 
         { 
@@ -47,6 +54,22 @@ public partial class MainViewModel : ObservableObject
         
         // Add initial log
         AddLog("Application started");
+    }
+
+    [RelayCommand]
+    private void ToggleTheme()
+    {
+        var currentTheme = Application.Current.RequestedTheme;
+        var newTheme = currentTheme == AppTheme.Dark ? AppTheme.Light : AppTheme.Dark;
+        Application.Current.UserAppTheme = newTheme;
+        UpdateThemeIcon();
+        AddLog($"Theme switched to {newTheme}");
+    }
+
+    private void UpdateThemeIcon()
+    {
+        // Fluent System Icons: E706 for light mode, E708 for dark mode
+        ThemeIcon = Application.Current.RequestedTheme == AppTheme.Dark ? "\uE706" : "\uE708";
     }
 
     [RelayCommand]
