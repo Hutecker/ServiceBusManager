@@ -12,10 +12,10 @@ public partial class MainPage : ContentPage
     private bool _isDraggingVertical = false;
     private Point _lastPoint;
 
-    public MainPage(MainViewModel vm)
+    public MainPage(MainViewModel viewModel)
     {
         InitializeComponent();
-        BindingContext = vm;
+        BindingContext = viewModel;
 
         // Initialize the splitter positions
         UpdatePanelSizes();
@@ -78,7 +78,7 @@ public partial class MainPage : ContentPage
                     UpdatePanelSizes();
                     _lastPoint = currentPoint.Value;
                 }
-            }
+            }   
         };
 
         VerticalSplitter.PointerReleased += (s, e) =>
