@@ -5,7 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:ServiceBusManager"
     Shell.FlyoutBehavior="Flyout"
-    Title="ServiceBusManager">
+    Title="Service Bus Manager">
 
     <ShellContent
         Title="Home"

@@ -7,13 +7,30 @@
              Padding="5">
 
     <Shell.TitleView>
-        <HorizontalStackLayout VerticalOptions="Center" Spacing="5">
-            <Image Source="icon.png" 
-                   HeightRequest="28" 
-                   Margin="5,0,0,0" 
-                   VerticalOptions="Center" />
-            <Label Text="Service Bus Manager" VerticalOptions="Center" FontSize="Medium" FontAttributes="Bold" />
-        </HorizontalStackLayout>
+        <Grid ColumnDefinitions="Auto, *, Auto" VerticalOptions="Center">
+            <!-- Icon and Title Text -->
+            <HorizontalStackLayout Grid.Column="0" VerticalOptions="Center" Spacing="5">
+                <Image Source="icon.png" 
+                       HeightRequest="24" 
+                       Margin="5,0,0,0" 
+                       VerticalOptions="Center" />
+                <Label Text="Service Bus Manager" VerticalOptions="Center" FontSize="Medium" FontAttributes="Bold" />
+            </HorizontalStackLayout>
+
+            <!-- Theme Toggle Button -->
+            <Label Grid.Column="2" 
+                   Text="{Binding ThemeIcon}"
+                   FontFamily="FontAwesomeSolid"
+                   FontSize="20"
+                   Margin="0,10,10,0" 
+                   VerticalOptions="Center"
+                   HorizontalOptions="End"
+                   TextColor="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource White}}">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding ToggleThemeCommand}" />
+                </Label.GestureRecognizers>
+            </Label>
+        </Grid>
     </Shell.TitleView>
 
     <ContentPage.Resources>
@@ -92,21 +109,7 @@
         <Border Grid.Row="0" Grid.Column="2" Stroke="{StaticResource Gray300}" 
                 StrokeThickness="1" Padding="5" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}">
             <Grid RowDefinitions="Auto, *">
-                <Grid ColumnDefinitions="*, Auto" Grid.Row="0">
-                    <Label Text="Details" FontAttributes="Bold" Grid.Column="0" Margin="0,0,0,5" VerticalOptions="Center"/>
-                    <!-- Theme Toggle Button -->
-                    <Label Grid.Column="1" 
-                           Text="{Binding ThemeIcon}"
-                           FontFamily="Fluent UI System Icons"
-                           FontSize="20"
-                           Margin="0,0,0,5"
-                           VerticalOptions="Center"
-                           TextColor="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource White}}">
-                        <Label.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding ToggleThemeCommand}" />
-                        </Label.GestureRecognizers>
-                    </Label>
-                </Grid>
+                <Label Text="Details" FontAttributes="Bold" Grid.Row="0" Margin="0,0,0,5" VerticalOptions="Center"/>
                 <ContentView Grid.Row="1" x:Name="DetailsContentView">
                     <Grid>
                         <!-- Default view when nothing is selected -->

@@ -26,7 +26,7 @@ public partial class MainViewModel : ObservableObject
     private string[] tabNames = new[] { "Overview", "Messages", "Properties" };
 
     [ObservableProperty]
-    private string themeIcon = "\uE706"; // Fluent System Icons light mode icon
+    private string themeIcon = "\uf185"; // Font Awesome sun icon
 
     public MainViewModel()
     {
@@ -68,8 +68,8 @@ public partial class MainViewModel : ObservableObject
 
     private void UpdateThemeIcon()
     {
-        // Fluent System Icons: E706 for light mode, E708 for dark mode
-        ThemeIcon = Application.Current.RequestedTheme == AppTheme.Dark ? "\uE706" : "\uE708";
+        // Font Awesome Solid: f185 (sun) for light mode, f186 (moon) for dark mode
+        ThemeIcon = Application.Current.RequestedTheme == AppTheme.Dark ? "\uf185" : "\uf186";
     }
 
     [RelayCommand]
