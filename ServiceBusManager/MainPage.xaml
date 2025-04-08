@@ -37,9 +37,9 @@
         <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
     </ContentPage.Resources>
 
-    <Grid RowDefinitions="*, 5, Auto" ColumnDefinitions="*, 5, 2*">
+    <Grid RowDefinitions="*, 5, Auto" ColumnDefinitions="1*, 5, 3*">
         <!-- Explorer Panel (Top Left) -->
-        <Border Grid.Row="0" Grid.Column="0" Stroke="{StaticResource Gray300}" 
+        <Border Grid.Row="0" Grid.Column="0" Stroke="{StaticResource Gray300}"
                 StrokeThickness="1" Padding="5" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}">
             <Grid RowDefinitions="Auto, *">
                 <Label Text="Explorer" FontAttributes="Bold" Grid.Row="0" Margin="0,0,0,5"/>
@@ -100,9 +100,6 @@
                  HorizontalOptions="Fill" 
                  VerticalOptions="Fill"
                  WidthRequest="1">
-            <BoxView.GestureRecognizers>
-                <PointerGestureRecognizer x:Name="HorizontalSplitter" />
-            </BoxView.GestureRecognizers>
         </BoxView>
 
         <!-- Details Panel (Top Right) -->
@@ -180,9 +177,6 @@
                  HorizontalOptions="Fill" 
                  VerticalOptions="Fill"
                  HeightRequest="1">
-            <BoxView.GestureRecognizers>
-                <PointerGestureRecognizer x:Name="VerticalSplitter" />
-            </BoxView.GestureRecognizers>
         </BoxView>
 
         <!-- Logs Panel (Bottom) -->
@@ -190,12 +184,12 @@
                 StrokeThickness="1" Padding="5" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}"
                 IsVisible="{Binding IsLogsVisible}">
             <Grid RowDefinitions="Auto, *">
-                <Grid Grid.Row="0" ColumnDefinitions="*, Auto, Auto" Margin="0,0,0,5">
+                <Grid Grid.Row="0" ColumnDefinitions="*, Auto, Auto">
                     <Label Text="Logs" FontAttributes="Bold" Grid.Column="0" VerticalOptions="Start"/>
-                    <Button Text="Clear" Grid.Column="1" HeightRequest="30" WidthRequest="60"
+                    <Button Text="Clear" Grid.Column="1" WidthRequest="60"
                             Command="{Binding ClearLogsCommand}"
                             FontSize="12" Margin="0,0,5,0"/>
-                    <Button Text="Hide" Grid.Column="2" HeightRequest="30" WidthRequest="60" 
+                    <Button Text="Hide" Grid.Column="2" WidthRequest="60" 
                             Command="{Binding ToggleLogsCommand}"
                             FontSize="12" />
                 </Grid>
