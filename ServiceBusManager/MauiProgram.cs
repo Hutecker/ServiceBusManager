@@ -14,10 +14,6 @@ namespace ServiceBusManager
                 {
                     fonts.AddFont("Inter-Regular.otf", "InterRegular");
                     fonts.AddFont("Inter-Bold.otf", "InterBold");
-                })
-                .ConfigureMauiHandlers(handlers =>
-                {
-                    handlers.AddHandler(typeof(DatePicker), typeof(CustomDatePickerHandler));
                 });
 
 #if DEBUG
