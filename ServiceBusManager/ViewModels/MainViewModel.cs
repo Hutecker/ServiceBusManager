@@ -2,6 +2,8 @@
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using Microsoft.Maui.ApplicationModel;
+using ServiceBusManager.Models.Constants;
+using ServiceBusManager.Models.Enums;
 
 namespace ServiceBusManager.ViewModels;
 
@@ -26,7 +28,7 @@ public partial class MainViewModel : ObservableObject
     private string[] tabNames = new[] { "Overview", "Messages", "Properties" };
 
     [ObservableProperty]
-    private string themeIcon = "\uf185"; // Font Awesome sun icon
+    private string themeIcon = FontAwesomeIcons.Sun;
 
     public MainViewModel()
     {
@@ -68,8 +70,7 @@ public partial class MainViewModel : ObservableObject
 
     private void UpdateThemeIcon()
     {
-        // Font Awesome Solid: f185 (sun) for light mode, f186 (moon) for dark mode
-        ThemeIcon = Application.Current.RequestedTheme == AppTheme.Dark ? "\uf185" : "\uf186";
+        ThemeIcon = Application.Current.RequestedTheme == AppTheme.Dark ? FontAwesomeIcons.Sun : FontAwesomeIcons.Moon;
     }
 
     [RelayCommand]
@@ -121,17 +122,9 @@ public class ServiceBusResourceItem
     public ObservableCollection<ServiceBusResourceItem> Children { get; set; } = new();
 }
 
-public enum ResourceType
-{
-    Queue,
-    Topic,
-    Subscription
-}
-
 public class LogItem
 {
     public DateTime Timestamp { get; set; }
     public string Message { get; set; }
-    
     public string FormattedLog => $"[{Timestamp:HH:mm:ss}] {Message}";
 }
