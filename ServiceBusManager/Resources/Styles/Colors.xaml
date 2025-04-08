@@ -8,21 +8,18 @@
 
     <!-- Primary Theme -->
     <Color x:Key="Primary">#3284bb</Color>
-    <Color x:Key="PrimaryDark">#005A9E</Color>
-    <Color x:Key="PrimaryDarkText">#C8C8C8</Color>
+    <Color x:Key="PrimaryDark">#3284bb</Color>
+    <Color x:Key="PrimaryDarkText">#EEEEED</Color>
 
     <!-- Secondary / Accent -->
-    <Color x:Key="Secondary">#3AAFA9</Color>
-    <Color x:Key="SecondaryDarkText">#5A7684</Color>
+    <Color x:Key="Secondary">#C8C8C8</Color>
     <Color x:Key="Tertiary">#1C1C1E</Color>
 
     <!-- Neutral Base -->
     <Color x:Key="White">#EEEEED</Color>
-    <Color x:Key="Black">#000000</Color>
-    <Color x:Key="OffBlack">#1F1F1F</Color>
+    <Color x:Key="Black">#1C1C1E</Color>
     <Color x:Key="MidnightBlue">#190649</Color>
-    <Color x:Key="Magenta">#D600AA</Color>
-    
+
     <Color x:Key="Gray100">#F8F9FA</Color>
     <Color x:Key="Gray200">#E1E5EA</Color>
     <Color x:Key="Gray300">#C8C8C8</Color>

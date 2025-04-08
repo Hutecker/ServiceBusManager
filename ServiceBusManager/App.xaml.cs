@@ -5,6 +5,9 @@
         public App()
         {
             InitializeComponent();
+
+            // Force the app into light or dark mode for debugging
+            UserAppTheme = AppTheme.Light;
         }
 
         protected override Window CreateWindow(IActivationState? activationState)
