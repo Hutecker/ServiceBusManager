@@ -180,20 +180,37 @@
         </BoxView>
 
         <!-- Logs Panel (Bottom) -->
-        <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Stroke="{StaticResource Gray300}" 
-                StrokeThickness="1" Padding="5" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}"
-                IsVisible="{Binding IsLogsVisible}">
+        <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Padding="5" 
+                BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}">
+            <!-- New inner Grid for Header and Content -->
             <Grid RowDefinitions="Auto, *">
+                <!-- Header Row -->
                 <Grid Grid.Row="0" ColumnDefinitions="*, Auto, Auto">
-                    <Label Text="Logs" FontAttributes="Bold" Grid.Column="0" VerticalOptions="Start"/>
-                    <Button Text="Clear" Grid.Column="1" WidthRequest="60"
+                    <!-- Logs Label - Always Visible -->
+                    <Label Text="Logs" FontAttributes="Bold" Grid.Column="0" VerticalOptions="Center"/>
+                    
+                    <!-- Clear Button - Visibility bound -->
+                    <Button Text="Clear" Grid.Column="1" WidthRequest="70"
                             Command="{Binding ClearLogsCommand}"
-                            FontSize="12" Margin="0,0,5,0"/>
-                    <Button Text="Hide" Grid.Column="2" WidthRequest="60" 
-                            Command="{Binding ToggleLogsCommand}"
-                            FontSize="12" />
+                            Margin="0,0,5,0"
+                            IsVisible="{Binding IsLogsVisible}"/>
+                            
+                    <!-- Hide/Show Button - Always Visible, Text Triggered -->
+                    <Button Grid.Column="2" WidthRequest="70" 
+                            Command="{Binding ToggleLogsCommand}">
+                        <Button.Triggers>
+                            <DataTrigger TargetType="Button" Binding="{Binding IsLogsVisible}" Value="True">
+                                <Setter Property="Text" Value="Hide" />
+                            </DataTrigger>
+                            <DataTrigger TargetType="Button" Binding="{Binding IsLogsVisible}" Value="False">
+                                <Setter Property="Text" Value="Show" />
+                            </DataTrigger>
+                        </Button.Triggers>
+                    </Button>
                 </Grid>
-                <ScrollView Grid.Row="1">
+                
+                <!-- Log Content ScrollView - Visibility bound -->
+                <ScrollView Grid.Row="1" IsVisible="{Binding IsLogsVisible}">
                     <CollectionView ItemsSource="{Binding Logs}" MinimumHeightRequest="150">
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="viewmodel:LogItem">
