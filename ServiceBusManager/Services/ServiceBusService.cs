@@ -2,6 +2,8 @@ using ServiceBusManager.Models;
 using ServiceBusManager.Models.Enums;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using Azure.Messaging.ServiceBus;
+using Azure.Messaging.ServiceBus.Administration;
 
 namespace ServiceBusManager.Services;
 
@@ -9,10 +11,7 @@ public class ServiceBusService : IServiceBusService
 {
     private readonly ILoggingService _loggingService;
     private string _connectionString = "";
-
-    // Replace with actual Azure Service Bus connection string and client logic
-    // private ServiceBusAdministrationClient _adminClient;
-    // private ServiceBusClient _client;
+    private ServiceBusAdministrationClient? _adminClient;
 
     public ServiceBusService(ILoggingService loggingService)
     {
@@ -41,40 +40,65 @@ public class ServiceBusService : IServiceBusService
 
     public async Task<IEnumerable<ServiceBusResourceItem>> GetResourcesAsync()
     {
-        // If no connection string, return empty list
         if (string.IsNullOrEmpty(_connectionString))
         {
             _loggingService.AddLog("No connection string configured. Please add a connection string.");
             return new List<ServiceBusResourceItem>();
         }
-        
-        // TODO: Replace with actual API calls to fetch queues and topics/subscriptions
-        // Use _adminClient.GetQueuesAsync(), _adminClient.GetTopicsAsync(), _adminClient.GetSubscriptionsAsync()
-        
-        // Returning sample data for now
-        await Task.Delay(500); // Simulate async work
 
-        var resources = new List<ServiceBusResourceItem>
+        try
         {
-            new ServiceBusResourceItem 
-            { 
-                Name = "Queue1", 
-                Type = ResourceType.Queue,
-                Children = new ObservableCollection<ServiceBusResourceItem>()
-            },
-            new ServiceBusResourceItem 
-            { 
-                Name = "Topic1", 
-                Type = ResourceType.Topic,
-                Children = new ObservableCollection<ServiceBusResourceItem>
-                {
-                    new ServiceBusResourceItem { Name = "Subscription1", Type = ResourceType.Subscription, Parent = "Topic1" },
-                    new ServiceBusResourceItem { Name = "Subscription2", Type = ResourceType.Subscription, Parent = "Topic1" }
-                }
-            }
-        };
+            var resources = new List<ServiceBusResourceItem>();
+            
+            // Create admin client if not exists
+            _adminClient ??= new ServiceBusAdministrationClient(_connectionString);
 
-        return resources;
+            // Get all queues
+            _loggingService.AddLog("Fetching queues...");
+            await foreach (var queueProperties in _adminClient.GetQueuesAsync())
+            {
+                resources.Add(new ServiceBusResourceItem
+                {
+                    Name = queueProperties.Name,
+                    Type = ResourceType.Queue,
+                    Children = new ObservableCollection<ServiceBusResourceItem>()
+                });
+            }
+
+            // Get all topics and their subscriptions
+            _loggingService.AddLog("Fetching topics and subscriptions...");
+            await foreach (var topicProperties in _adminClient.GetTopicsAsync())
+            {
+                var topicItem = new ServiceBusResourceItem
+                {
+                    Name = topicProperties.Name,
+                    Type = ResourceType.Topic,
+                    Children = new ObservableCollection<ServiceBusResourceItem>()
+                };
+
+                // Get subscriptions for this topic
+                await foreach (var subscriptionProperties in _adminClient.GetSubscriptionsAsync(topicProperties.Name))
+                {
+                    topicItem.Children.Add(new ServiceBusResourceItem
+                    {
+                        Name = subscriptionProperties.SubscriptionName,
+                        Type = ResourceType.Subscription,
+                        Parent = topicProperties.Name
+                    });
+                }
+
+                resources.Add(topicItem);
+            }
+
+            _loggingService.AddLog($"Found {resources.Count} resources");
+            return resources;
+        }
+        catch (Exception ex)
+        {
+            _loggingService.AddLog($"Error fetching resources: {ex.Message}");
+            Debug.WriteLine($"Error fetching resources: {ex}");
+            return new List<ServiceBusResourceItem>();
+        }
     }
     
     public string GetConnectionString()
@@ -96,26 +120,20 @@ public class ServiceBusService : IServiceBusService
         
         try
         {
+            // Validate connection string by attempting to create a client
+            _adminClient = new ServiceBusAdministrationClient(connectionString);
+            
+            // If we get here, connection string is valid
             _connectionString = connectionString;
+            _loggingService.AddLog("Connection string updated successfully");
             
             // In a real app, you'd save this to secure storage
             // await SecureStorage.SetAsync("ServiceBusConnectionString", connectionString);
-            
-            // Initialize clients with new connection string
-            // _adminClient = new ServiceBusAdministrationClient(connectionString);
-            // _client = new ServiceBusClient(connectionString);
-            
-            
-            // Validate connection by making a test request
-            // This would be an actual check in a real app
-            await Task.Delay(500); // Simulate some async validation work
         }
         catch (Exception ex)
         {
-            _loggingService.AddLog($"Error setting connection string: {ex.Message}");
-            throw;
+            _loggingService.AddLog($"Invalid connection string: {ex.Message}");
+            throw new ArgumentException("Invalid connection string");
         }
     }
-
-    // Implement other IServiceBusService methods here...
-} 
+}
