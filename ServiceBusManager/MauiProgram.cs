@@ -28,11 +28,13 @@ public static class MauiProgram
         // Register ViewModels in dependency order
         builder.Services.AddSingleton<DetailsViewModel>();
         builder.Services.AddSingleton<ExplorerViewModel>();
+        builder.Services.AddSingleton<LogsViewModel>();
         builder.Services.AddSingleton<MainViewModel>();
 
         // Register Views
         builder.Services.AddSingleton<DetailsView>();
         builder.Services.AddSingleton<ExplorerView>();
+        builder.Services.AddSingleton<LogsView>();
         builder.Services.AddSingleton<MainPage>();
 
 #if DEBUG

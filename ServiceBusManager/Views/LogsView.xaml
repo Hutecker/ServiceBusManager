@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ServiceBusManager.ViewModels"
+             xmlns:models="clr-namespace:ServiceBusManager.Models"
+             x:Class="ServiceBusManager.Views.LogsView"
+             x:DataType="vm:LogsViewModel">
+
+    <!-- New inner Grid for Header and Content -->
+    <Grid RowDefinitions="Auto, *">
+        <!-- Header Row -->
+        <Grid Grid.Row="0" ColumnDefinitions="*, Auto, Auto">
+            <!-- Logs Label - Always Visible -->
+            <Label Text="Logs" FontSize="16" FontAttributes="Bold" Grid.Column="0"/>
+            
+            <!-- Clear Button - Visibility bound -->
+            <Button Text="Clear" Grid.Column="1" WidthRequest="70"
+                    Command="{Binding ClearLogsCommand}"
+                    Margin="0,0,5,0"
+                    IsVisible="{Binding IsLogsVisible}"/>
+                    
+            <!-- Hide/Show Button - Always Visible, Text Triggered -->
+            <Button Grid.Column="2" WidthRequest="70" 
+                    Command="{Binding ToggleLogsCommand}">
+                <Button.Triggers>
+                    <DataTrigger TargetType="Button" Binding="{Binding IsLogsVisible}" Value="True">
+                        <Setter Property="Text" Value="Hide" />
+                    </DataTrigger>
+                    <DataTrigger TargetType="Button" Binding="{Binding IsLogsVisible}" Value="False">
+                        <Setter Property="Text" Value="Show" />
+                    </DataTrigger>
+                </Button.Triggers>
+            </Button>
+        </Grid>
+        
+        <!-- Log Content ScrollView - Visibility bound -->
+        <ScrollView Grid.Row="1" IsVisible="{Binding IsLogsVisible}" HeightRequest="200">
+            <CollectionView ItemsSource="{Binding Logs}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:LogItem">
+                        <Label Text="{Binding FormattedLog}" Padding="2" />
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </ScrollView>
+    </Grid>
+</ContentView> 

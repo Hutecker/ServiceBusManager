@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using ServiceBusManager.Models;
 using ServiceBusManager.Models.Constants;
 using ServiceBusManager.Services;
+using Microsoft.Maui.ApplicationModel;
 using System.Diagnostics;
 
 namespace ServiceBusManager.ViewModels;
@@ -21,6 +22,9 @@ public partial class MainViewModel : ObservableObject
 
     [ObservableProperty]
     private ExplorerViewModel explorerViewModel;
+    
+    [ObservableProperty]
+    private LogsViewModel logsViewModel;
 
     // Expose sorted Logs from the Logging Service
     public ObservableCollection<LogItem> Logs => _sortedLogs;
@@ -38,15 +42,21 @@ public partial class MainViewModel : ObservableObject
     private string themeIcon = FontAwesomeIcons.Sun;
 
     // Inject services
-    public MainViewModel(ILoggingService loggingService, DetailsViewModel detailsViewModel, ExplorerViewModel explorerViewModel)
+    public MainViewModel(
+        ILoggingService loggingService, 
+        DetailsViewModel detailsViewModel, 
+        ExplorerViewModel explorerViewModel,
+        LogsViewModel logsViewModel)
     {
         _loggingService = loggingService;
         DetailsViewModel = detailsViewModel;
         ExplorerViewModel = explorerViewModel;
+        LogsViewModel = logsViewModel;
 
         Debug.WriteLine("MainViewModel constructor");
         Debug.WriteLine($"DetailsViewModel: {detailsViewModel != null}");
         Debug.WriteLine($"ExplorerViewModel: {explorerViewModel != null}");
+        Debug.WriteLine($"LogsViewModel: {logsViewModel != null}");
 
         // Subscribe to resource selection in ExplorerViewModel
         ExplorerViewModel.ResourceSelected += OnResourceSelected;
@@ -113,7 +123,7 @@ public partial class MainViewModel : ObservableObject
         if (index >= 0 && index < TabNames.Length)
         {
             SelectedTabIndex = index;
-            _loggingService.AddLog($"Selected tab: {TabNames[index]}");
+            Debug.WriteLine($"Selected tab: {TabNames[index]}");
         }
     }
 }

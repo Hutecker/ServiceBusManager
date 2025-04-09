@@ -8,20 +8,28 @@ public partial class MainPage : ContentPage
 {
     private readonly ExplorerViewModel _explorerViewModel;
     private readonly DetailsViewModel _detailsViewModel;
+    private readonly LogsViewModel _logsViewModel;
 
-    public MainPage(MainViewModel mainViewModel, ExplorerViewModel explorerViewModel, DetailsViewModel detailsViewModel)
+    public MainPage(
+        MainViewModel mainViewModel, 
+        ExplorerViewModel explorerViewModel, 
+        DetailsViewModel detailsViewModel,
+        LogsViewModel logsViewModel)
     {
         InitializeComponent();
         
         _explorerViewModel = explorerViewModel;
         _detailsViewModel = detailsViewModel;
+        _logsViewModel = logsViewModel;
         
         BindingContext = mainViewModel;
         
+        // Log diagnostic information
         Debug.WriteLine("MainPage initialized");
         Debug.WriteLine($"MainViewModel: {mainViewModel != null}");
         Debug.WriteLine($"ExplorerViewModel: {explorerViewModel != null}");
         Debug.WriteLine($"DetailsViewModel: {detailsViewModel != null}");
+        Debug.WriteLine($"LogsViewModel: {logsViewModel != null}");
         
         // Find the views in the visual tree
         ApplyBindings();
@@ -43,10 +51,12 @@ public partial class MainPage : ContentPage
         // Find views
         var explorerView = FindVisualChildren<ExplorerView>(this).FirstOrDefault();
         var detailsView = FindVisualChildren<DetailsView>(this).FirstOrDefault();
+        var logsView = FindVisualChildren<LogsView>(this).FirstOrDefault();
         
         // Debug information
         Debug.WriteLine($"Found ExplorerView: {explorerView != null}");
         Debug.WriteLine($"Found DetailsView: {detailsView != null}");
+        Debug.WriteLine($"Found LogsView: {logsView != null}");
         
         // Apply bindings if views were found
         if (explorerView != null)
@@ -59,6 +69,12 @@ public partial class MainPage : ContentPage
         {
             detailsView.BindingContext = _detailsViewModel;
             Debug.WriteLine("Set DetailsView.BindingContext");
+        }
+        
+        if (logsView != null)
+        {
+            logsView.BindingContext = _logsViewModel;
+            Debug.WriteLine("Set LogsView.BindingContext");
         }
     }
     
