@@ -38,7 +38,7 @@
         <!-- <ResourceDictionary Source="Resources/Styles/Colors.xaml" /> -->
     </ContentPage.Resources>
 
-    <Grid RowDefinitions="3*, 5, 1*" ColumnDefinitions="1*, 5, 3*">
+    <Grid RowDefinitions="3*, 5, auto" ColumnDefinitions="1*, 5, 3*">
         <!-- Explorer Panel (Top Left) -->
         <Border Grid.Row="0" Grid.Column="0" Stroke="{StaticResource Gray300}"
                 StrokeThickness="1" Padding="5" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}">
@@ -211,7 +211,7 @@
                 </Grid>
                 
                 <!-- Log Content ScrollView - Visibility bound -->
-                <ScrollView Grid.Row="1" IsVisible="{Binding IsLogsVisible}">
+                <ScrollView Grid.Row="1" IsVisible="{Binding IsLogsVisible}" HeightRequest="200">
                     <CollectionView ItemsSource="{Binding Logs}">
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="models:LogItem">
