@@ -50,7 +50,7 @@ public partial class MainPage : ContentPage
         }
     }
     
-    private void ApplyBindings()
+    private new void ApplyBindings()
     {
         // Find views
         var explorerView = FindVisualChildren<ExplorerView>(this).FirstOrDefault();

@@ -5,6 +5,7 @@ using ServiceBusManager.Services;
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace ServiceBusManager.ViewModels;
 
@@ -19,7 +20,7 @@ public partial class ConnectionModalViewModel : ObservableObject
     [ObservableProperty]
     private string connectionString = string.Empty;
     
-    public event Action DialogClosed;
+    public event Action<bool>? DialogClosed;
     
     public ConnectionModalViewModel(IServiceBusService serviceBusService, ILoggingService loggingService)
     {
@@ -33,10 +34,10 @@ public partial class ConnectionModalViewModel : ObservableObject
         IsVisible = true;
     }
     
-    public void Hide()
+    private void Hide(bool wasSaved)
     {
         IsVisible = false;
-        DialogClosed?.Invoke();
+        DialogClosed?.Invoke(wasSaved);
     }
     
     [RelayCommand]
@@ -46,25 +47,32 @@ public partial class ConnectionModalViewModel : ObservableObject
         {
             if (string.IsNullOrWhiteSpace(ConnectionString))
             {
-                await Application.Current.MainPage.DisplayAlert("Error", "Connection string cannot be empty", "OK");
+                if (Application.Current?.Windows?.FirstOrDefault()?.Page is Page page)
+                {
+                    await page.DisplayAlert("Error", "Connection string cannot be empty", "OK");
+                }
                 return;
             }
             
             await _serviceBusService.SetConnectionStringAsync(ConnectionString);
-            _loggingService.AddLog("Connection string saved");
-            Hide();
+            _loggingService.AddLog("Connecting...");
+            Hide(true);
         }
         catch (Exception ex)
         {
             Debug.WriteLine($"Error saving connection string: {ex.Message}");
             _loggingService.AddLog($"Error saving connection string: {ex.Message}");
-            await Application.Current.MainPage.DisplayAlert("Error", $"Failed to save connection string: {ex.Message}", "OK");
+
+            if (Application.Current?.Windows?.FirstOrDefault()?.Page is Page page)
+            {
+                await page.DisplayAlert("Error", $"Failed to save connection string: {ex.Message}", "OK");
+            }
         }
     }
     
     [RelayCommand]
     private void Cancel()
     {
-        Hide();
+        Hide(false);
     }
 } 

@@ -13,7 +13,7 @@ public partial class MainViewModel : ObservableObject
     private readonly ILoggingService _loggingService;
 
     [ObservableProperty]
-    private ServiceBusResourceItem selectedResource;
+    private ServiceBusResourceItem? selectedResource;
 
     [ObservableProperty]
     private DetailsViewModel detailsViewModel;
@@ -68,7 +68,7 @@ public partial class MainViewModel : ObservableObject
         Debug.WriteLine("Application started");
     }
 
-    private void OnResourceSelected(ServiceBusResourceItem resource)
+    private void OnResourceSelected(ServiceBusResourceItem? resource)
     {
         Debug.WriteLine($"MainViewModel.OnResourceSelected: {resource?.Name}");
         SelectedResource = resource;
@@ -78,16 +78,22 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand]
     private void ToggleTheme()
     {
-        var currentTheme = Application.Current.RequestedTheme;
-        var newTheme = currentTheme == AppTheme.Dark ? AppTheme.Light : AppTheme.Dark;
-        Application.Current.UserAppTheme = newTheme;
-        UpdateThemeIcon();
-        _loggingService.AddLog($"Theme switched to {newTheme}");
+        if (Application.Current is not null)
+        {
+            var currentTheme = Application.Current.RequestedTheme;
+            var newTheme = currentTheme == AppTheme.Dark ? AppTheme.Light : AppTheme.Dark;
+            Application.Current.UserAppTheme = newTheme;
+            UpdateThemeIcon();
+            _loggingService.AddLog($"Theme switched to {newTheme}");
+        }
     }
 
     private void UpdateThemeIcon()
     {
-        ThemeIcon = Application.Current.RequestedTheme == AppTheme.Dark ? FontAwesomeIcons.Sun : FontAwesomeIcons.Moon;
+        if (Application.Current is not null)
+        {
+            ThemeIcon = Application.Current.RequestedTheme == AppTheme.Dark ? FontAwesomeIcons.Sun : FontAwesomeIcons.Moon;
+        }
     }
 
     [RelayCommand]

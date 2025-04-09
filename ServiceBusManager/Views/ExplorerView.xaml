@@ -32,8 +32,9 @@
         <CollectionView Grid.Row="1" 
                         ItemsSource="{Binding Resources}"
                         SelectionMode="Single"
+                        SelectedItem="{Binding SelectedResource}"
                         SelectionChangedCommand="{Binding SelectResourceCommand}"
-                        SelectionChangedCommandParameter="{Binding SelectedItem, Source={RelativeSource Self}}">
+                        SelectionChangedCommandParameter="{Binding SelectedResource}">
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:ServiceBusResourceItem">
                     <Grid Padding="5" ColumnDefinitions="Auto, *">

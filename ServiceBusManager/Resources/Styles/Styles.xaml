@@ -153,15 +153,6 @@
         </Setter>
     </Style>
 
-    <Style TargetType="Frame">
-        <Setter Property="HasShadow" Value="False" />
-        <Setter Property="BorderColor" Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray400}}" />
-        <Setter Property="CornerRadius" Value="2" />
-        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Black}}" />
-        <Setter Property="MinimumHeightRequest" Value="35"/>
-        <Setter Property="MinimumWidthRequest" Value="35"/>
-    </Style>
-
     <Style TargetType="ImageButton">
         <Setter Property="Opacity" Value="1" />
         <Setter Property="BorderColor" Value="Transparent"/>
@@ -227,7 +218,7 @@
         <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Black}}" />
         <Setter Property="ItemTemplate">
             <Setter.Value>
-                <DataTemplate>
+                <DataTemplate x:DataType="x:String">
                     <ViewCell>
                         <Grid Padding="5" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Black}}">
                             <VisualStateManager.VisualStateGroups>

@@ -2,11 +2,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ServiceBusManager.Models;
 using ServiceBusManager.Services;
-using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace ServiceBusManager.ViewModels;
 
@@ -20,7 +17,7 @@ public partial class ExplorerViewModel : ObservableObject
     private ObservableCollection<ServiceBusResourceItem> resources = new();
 
     [ObservableProperty]
-    private ServiceBusResourceItem selectedResource;
+    private ServiceBusResourceItem? selectedResource;
 
     public event Action<ServiceBusResourceItem> ResourceSelected;
 
@@ -83,19 +80,21 @@ public partial class ExplorerViewModel : ObservableObject
     private void ShowConnectionDialog()
     {
         Debug.WriteLine("Showing connection dialog");
-        _loggingService.AddLog("Opening connection string dialog");
         _connectionModalViewModel.Show();
         
         // Subscribe to dialog closed event to refresh resources
         _connectionModalViewModel.DialogClosed += OnConnectionDialogClosed;
     }
     
-    private void OnConnectionDialogClosed()
+    private void OnConnectionDialogClosed(bool wasSaved)
     {
         // Unsubscribe to avoid memory leaks
         _connectionModalViewModel.DialogClosed -= OnConnectionDialogClosed;
         
-        // Reload resources when connection string changes
-        LoadResourcesCommand.Execute(null);
+        // Only reload resources if the connection string was saved
+        if (wasSaved)
+        {
+            LoadResourcesCommand.Execute(null);
+        }
     }
 } 

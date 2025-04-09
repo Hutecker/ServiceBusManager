@@ -7,12 +7,12 @@ namespace ServiceBusManager.Converters;
 /// </summary>
 public class IsNullConverter : IValueConverter
 {
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         return value == null;
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         throw new NotImplementedException();
     }
@@ -23,12 +23,12 @@ public class IsNullConverter : IValueConverter
 /// </summary>
 public class IsNotNullConverter : IValueConverter
 {
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         return value != null;
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         throw new NotImplementedException();
     }
@@ -39,7 +39,7 @@ public class IsNotNullConverter : IValueConverter
 /// </summary>
 public class CountGreaterThanZeroConverter : IValueConverter
 {
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         if (value is int count)
         {
@@ -49,7 +49,7 @@ public class CountGreaterThanZeroConverter : IValueConverter
         return false;
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         throw new NotImplementedException();
     }
@@ -60,7 +60,7 @@ public class CountGreaterThanZeroConverter : IValueConverter
 /// </summary>
 public class EqualityConverter : IValueConverter
 {
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         if (parameter == null || value == null)
             return false;
@@ -76,7 +76,7 @@ public class EqualityConverter : IValueConverter
         return value.ToString() == parameter.ToString();
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         throw new NotImplementedException();
     }
@@ -87,7 +87,7 @@ public class EqualityConverter : IValueConverter
 /// </summary>
 public class EqualityToBrushConverter : IValueConverter
 {
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         if (parameter == null || value == null)
             return Colors.Transparent;
@@ -110,7 +110,7 @@ public class EqualityToBrushConverter : IValueConverter
         return isEqual ? Color.FromArgb("#3284bb") : Color.FromArgb("#C8C8C8");
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         throw new NotImplementedException();
     }

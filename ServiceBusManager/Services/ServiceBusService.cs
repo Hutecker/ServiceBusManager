@@ -1,9 +1,6 @@
 using ServiceBusManager.Models;
 using ServiceBusManager.Models.Enums;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Threading.Tasks;
-using System;
 using System.Diagnostics;
 
 namespace ServiceBusManager.Services;
@@ -108,7 +105,6 @@ public class ServiceBusService : IServiceBusService
             // _adminClient = new ServiceBusAdministrationClient(connectionString);
             // _client = new ServiceBusClient(connectionString);
             
-            _loggingService.AddLog("Connection string updated");
             
             // Validate connection by making a test request
             // This would be an actual check in a real app
