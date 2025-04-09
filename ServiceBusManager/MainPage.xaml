@@ -73,5 +73,10 @@
                 BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}">
             <views:LogsView />
         </Border>
+        
+        <!-- Connection Modal (initially invisible) -->
+        <views:ConnectionModal Grid.Row="0" Grid.RowSpan="3" 
+                              Grid.Column="0" Grid.ColumnSpan="3"
+                              ZIndex="1000" />
     </Grid>
 </ContentPage>

@@ -9,6 +9,11 @@ public interface IServiceBusService
     // Example method - adjust based on actual needs
     Task<IEnumerable<ServiceBusResourceItem>> GetResourcesAsync();
 
+    // Connection string management
+    string GetConnectionString();
+    Task SetConnectionStringAsync(string connectionString);
+    bool HasConnectionString();
+
     // Add other methods as needed, e.g.:
     // Task<QueueProperties> GetQueuePropertiesAsync(string queueName);
     // Task<TopicProperties> GetTopicPropertiesAsync(string topicName);

@@ -26,12 +26,14 @@ public static class MauiProgram
         builder.Services.AddSingleton<ILoggingService, LoggingService>();
 
         // Register ViewModels in dependency order
+        builder.Services.AddSingleton<ConnectionModalViewModel>();
         builder.Services.AddSingleton<DetailsViewModel>();
         builder.Services.AddSingleton<ExplorerViewModel>();
         builder.Services.AddSingleton<LogsViewModel>();
         builder.Services.AddSingleton<MainViewModel>();
 
         // Register Views
+        builder.Services.AddSingleton<ConnectionModal>();
         builder.Services.AddSingleton<DetailsView>();
         builder.Services.AddSingleton<ExplorerView>();
         builder.Services.AddSingleton<LogsView>();

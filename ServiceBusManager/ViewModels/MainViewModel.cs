@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System.Collections.ObjectModel;
 using ServiceBusManager.Models;
 using ServiceBusManager.Models.Constants;
 using ServiceBusManager.Services;
@@ -12,7 +11,6 @@ namespace ServiceBusManager.ViewModels;
 public partial class MainViewModel : ObservableObject
 {
     private readonly ILoggingService _loggingService;
-    private readonly ObservableCollection<LogItem> _sortedLogs = new();
 
     [ObservableProperty]
     private ServiceBusResourceItem selectedResource;
@@ -25,13 +23,10 @@ public partial class MainViewModel : ObservableObject
     
     [ObservableProperty]
     private LogsViewModel logsViewModel;
-
-    // Expose sorted Logs from the Logging Service
-    public ObservableCollection<LogItem> Logs => _sortedLogs;
-
-    [ObservableProperty]
-    private bool isLogsVisible = true;
     
+    [ObservableProperty]
+    private ConnectionModalViewModel connectionModalViewModel;
+
     [ObservableProperty]
     private int selectedTabIndex = 0;
     
@@ -46,31 +41,24 @@ public partial class MainViewModel : ObservableObject
         ILoggingService loggingService, 
         DetailsViewModel detailsViewModel, 
         ExplorerViewModel explorerViewModel,
-        LogsViewModel logsViewModel)
+        LogsViewModel logsViewModel,
+        ConnectionModalViewModel connectionModalViewModel)
     {
         _loggingService = loggingService;
         DetailsViewModel = detailsViewModel;
         ExplorerViewModel = explorerViewModel;
         LogsViewModel = logsViewModel;
+        ConnectionModalViewModel = connectionModalViewModel;
 
         Debug.WriteLine("MainViewModel constructor");
         Debug.WriteLine($"DetailsViewModel: {detailsViewModel != null}");
         Debug.WriteLine($"ExplorerViewModel: {explorerViewModel != null}");
         Debug.WriteLine($"LogsViewModel: {logsViewModel != null}");
+        Debug.WriteLine($"ConnectionModalViewModel: {connectionModalViewModel != null}");
 
         // Subscribe to resource selection in ExplorerViewModel
         ExplorerViewModel.ResourceSelected += OnResourceSelected;
         Debug.WriteLine("Subscribed to ExplorerViewModel.ResourceSelected");
-
-        // Subscribe to log changes
-        _loggingService.Logs.CollectionChanged += (s, e) =>
-        {
-            _sortedLogs.Clear();
-            foreach (var log in _loggingService.Logs.OrderByDescending(l => l.Timestamp))
-            {
-                _sortedLogs.Add(log);
-            }
-        };
 
         // Initialize theme icon based on current theme
         UpdateThemeIcon();
@@ -102,21 +90,6 @@ public partial class MainViewModel : ObservableObject
         ThemeIcon = Application.Current.RequestedTheme == AppTheme.Dark ? FontAwesomeIcons.Sun : FontAwesomeIcons.Moon;
     }
 
-    [RelayCommand]
-    private void ClearLogs()
-    {
-        // Use the service
-        _loggingService.ClearLogs();
-    }
-
-    [RelayCommand]
-    private void ToggleLogs()
-    {
-        IsLogsVisible = !IsLogsVisible;
-        // Log using the service after toggling state
-        _loggingService.AddLog($"Logs panel {(IsLogsVisible ? "shown" : "hidden")}");
-    }
-    
     [RelayCommand]
     private void SelectTab(int index)
     {

@@ -9,18 +9,21 @@ public partial class MainPage : ContentPage
     private readonly ExplorerViewModel _explorerViewModel;
     private readonly DetailsViewModel _detailsViewModel;
     private readonly LogsViewModel _logsViewModel;
+    private readonly ConnectionModalViewModel _connectionModalViewModel;
 
     public MainPage(
         MainViewModel mainViewModel, 
         ExplorerViewModel explorerViewModel, 
         DetailsViewModel detailsViewModel,
-        LogsViewModel logsViewModel)
+        LogsViewModel logsViewModel,
+        ConnectionModalViewModel connectionModalViewModel)
     {
         InitializeComponent();
         
         _explorerViewModel = explorerViewModel;
         _detailsViewModel = detailsViewModel;
         _logsViewModel = logsViewModel;
+        _connectionModalViewModel = connectionModalViewModel;
         
         BindingContext = mainViewModel;
         
@@ -30,6 +33,7 @@ public partial class MainPage : ContentPage
         Debug.WriteLine($"ExplorerViewModel: {explorerViewModel != null}");
         Debug.WriteLine($"DetailsViewModel: {detailsViewModel != null}");
         Debug.WriteLine($"LogsViewModel: {logsViewModel != null}");
+        Debug.WriteLine($"ConnectionModalViewModel: {connectionModalViewModel != null}");
         
         // Find the views in the visual tree
         ApplyBindings();
@@ -52,11 +56,13 @@ public partial class MainPage : ContentPage
         var explorerView = FindVisualChildren<ExplorerView>(this).FirstOrDefault();
         var detailsView = FindVisualChildren<DetailsView>(this).FirstOrDefault();
         var logsView = FindVisualChildren<LogsView>(this).FirstOrDefault();
+        var connectionModal = FindVisualChildren<ConnectionModal>(this).FirstOrDefault();
         
         // Debug information
         Debug.WriteLine($"Found ExplorerView: {explorerView != null}");
         Debug.WriteLine($"Found DetailsView: {detailsView != null}");
         Debug.WriteLine($"Found LogsView: {logsView != null}");
+        Debug.WriteLine($"Found ConnectionModal: {connectionModal != null}");
         
         // Apply bindings if views were found
         if (explorerView != null)
@@ -75,6 +81,12 @@ public partial class MainPage : ContentPage
         {
             logsView.BindingContext = _logsViewModel;
             Debug.WriteLine("Set LogsView.BindingContext");
+        }
+        
+        if (connectionModal != null)
+        {
+            connectionModal.BindingContext = _connectionModalViewModel;
+            Debug.WriteLine("Set ConnectionModal.BindingContext");
         }
     }
     

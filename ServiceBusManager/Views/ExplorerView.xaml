@@ -7,7 +7,22 @@
              x:DataType="viewmodel:ExplorerViewModel">
 
     <Grid RowDefinitions="Auto, *">
-        <Label Text="Explorer" FontSize="16" FontAttributes="Bold" Grid.Row="0" Margin="0,0,0,5"/>
+        <!-- Header with Explorer text and add button -->
+        <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Margin="0,0,0,5">
+            <Label Text="Explorer" FontSize="16" FontAttributes="Bold" Grid.Column="0" VerticalOptions="Center"/>
+            <Label Text="+" 
+                   FontSize="20" 
+                   FontAttributes="Bold"
+                   Grid.Column="1" 
+                   VerticalOptions="Center"
+                   HorizontalOptions="End"
+                   Margin="0,0,5,0">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding ShowConnectionDialogCommand}" />
+                </Label.GestureRecognizers>
+            </Label>
+        </Grid>
+        
         <!-- Tree View Using Collection View with Templates -->
         <CollectionView Grid.Row="1" 
                         ItemsSource="{Binding Resources}"
