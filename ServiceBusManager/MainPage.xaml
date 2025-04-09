@@ -35,10 +35,10 @@
     </Shell.TitleView>
 
     <ContentPage.Resources>
-        <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
+        <!-- <ResourceDictionary Source="Resources/Styles/Colors.xaml" /> -->
     </ContentPage.Resources>
 
-    <Grid RowDefinitions="*, 5, Auto" ColumnDefinitions="1*, 5, 3*">
+    <Grid RowDefinitions="3*, 5, 1*" ColumnDefinitions="1*, 5, 3*">
         <!-- Explorer Panel (Top Left) -->
         <Border Grid.Row="0" Grid.Column="0" Stroke="{StaticResource Gray300}"
                 StrokeThickness="1" Padding="5" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}">
@@ -212,7 +212,7 @@
                 
                 <!-- Log Content ScrollView - Visibility bound -->
                 <ScrollView Grid.Row="1" IsVisible="{Binding IsLogsVisible}">
-                    <CollectionView ItemsSource="{Binding Logs}" MinimumHeightRequest="150">
+                    <CollectionView ItemsSource="{Binding Logs}">
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="models:LogItem">
                                 <Label Text="{Binding FormattedLog}" Padding="2" />
