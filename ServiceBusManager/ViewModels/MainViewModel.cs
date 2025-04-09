@@ -1,27 +1,27 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
-using Microsoft.Maui.ApplicationModel;
 using ServiceBusManager.Models;
 using ServiceBusManager.Models.Constants;
 using ServiceBusManager.Services;
-using System.Threading.Tasks;
-using System.Windows.Input;
-using System.Linq;
+using Microsoft.Maui.ApplicationModel;
+using System.Diagnostics;
 
 namespace ServiceBusManager.ViewModels;
 
 public partial class MainViewModel : ObservableObject
 {
-    private readonly IServiceBusService _serviceBusService;
     private readonly ILoggingService _loggingService;
     private readonly ObservableCollection<LogItem> _sortedLogs = new();
 
     [ObservableProperty]
-    private ObservableCollection<ServiceBusResourceItem> resources = new();
+    private ServiceBusResourceItem selectedResource;
 
     [ObservableProperty]
-    private ServiceBusResourceItem selectedResource;
+    private DetailsViewModel detailsViewModel;
+
+    [ObservableProperty]
+    private ExplorerViewModel explorerViewModel;
 
     // Expose sorted Logs from the Logging Service
     public ObservableCollection<LogItem> Logs => _sortedLogs;
@@ -39,10 +39,19 @@ public partial class MainViewModel : ObservableObject
     private string themeIcon = FontAwesomeIcons.Sun;
 
     // Inject services
-    public MainViewModel(IServiceBusService serviceBusService, ILoggingService loggingService)
+    public MainViewModel(ILoggingService loggingService, DetailsViewModel detailsViewModel, ExplorerViewModel explorerViewModel)
     {
-        _serviceBusService = serviceBusService;
         _loggingService = loggingService;
+        DetailsViewModel = detailsViewModel;
+        ExplorerViewModel = explorerViewModel;
+
+        Debug.WriteLine("MainViewModel constructor");
+        Debug.WriteLine($"DetailsViewModel: {detailsViewModel != null}");
+        Debug.WriteLine($"ExplorerViewModel: {explorerViewModel != null}");
+
+        // Subscribe to resource selection in ExplorerViewModel
+        ExplorerViewModel.ResourceSelected += OnResourceSelected;
+        Debug.WriteLine("Subscribed to ExplorerViewModel.ResourceSelected");
 
         // Subscribe to log changes
         _loggingService.Logs.CollectionChanged += (s, e) =>
@@ -59,30 +68,14 @@ public partial class MainViewModel : ObservableObject
                 
         // Add initial log via service
         _loggingService.AddLog("Application started");
-
-        // Load resources asynchronously
-        LoadResourcesCommand.Execute(null);
+        Debug.WriteLine("Application started");
     }
 
-    [RelayCommand]
-    private async Task LoadResourcesAsync()
+    private void OnResourceSelected(ServiceBusResourceItem resource)
     {
-        _loggingService.AddLog("Loading service bus resources...");
-        try
-        {
-            var fetchedResources = await _serviceBusService.GetResourcesAsync();
-            Resources.Clear();
-            foreach (var resource in fetchedResources)
-            {
-                Resources.Add(resource);
-            }
-            _loggingService.AddLog($"Loaded {Resources.Count} resources.");
-        }
-        catch (Exception ex)
-        { 
-            // Handle exceptions appropriately (e.g., show error message)
-            _loggingService.AddLog($"Error loading resources: {ex.Message}");
-        }
+        Debug.WriteLine($"MainViewModel.OnResourceSelected: {resource?.Name}");
+        SelectedResource = resource;
+        DetailsViewModel.SelectResource(resource);
     }
 
     [RelayCommand]
@@ -98,14 +91,6 @@ public partial class MainViewModel : ObservableObject
     private void UpdateThemeIcon()
     {
         ThemeIcon = Application.Current.RequestedTheme == AppTheme.Dark ? FontAwesomeIcons.Sun : FontAwesomeIcons.Moon;
-    }
-
-    [RelayCommand]
-    private void SelectResource(ServiceBusResourceItem resource)
-    {
-        if (resource == null) return;
-        SelectedResource = resource;
-        _loggingService.AddLog($"Selected {resource.Type} '{resource.Name}'");
     }
 
     [RelayCommand]

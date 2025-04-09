@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ServiceBusManager.Views.ExplorerView"
+             xmlns:viewmodel="clr-namespace:ServiceBusManager.ViewModels"
+             xmlns:models="clr-namespace:ServiceBusManager.Models"
+             x:DataType="viewmodel:ExplorerViewModel">
+
+    <Grid RowDefinitions="Auto, *">
+        <Label Text="Explorer" FontSize="16" FontAttributes="Bold" Grid.Row="0" Margin="0,0,0,5"/>
+        <!-- Tree View Using Collection View with Templates -->
+        <CollectionView Grid.Row="1" 
+                        ItemsSource="{Binding Resources}"
+                        SelectionMode="Single"
+                        SelectionChangedCommand="{Binding SelectResourceCommand}"
+                        SelectionChangedCommandParameter="{Binding SelectedItem, Source={RelativeSource Self}}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:ServiceBusResourceItem">
+                    <Grid Padding="5" ColumnDefinitions="Auto, *">
+                        <!-- Text-based indicator based on resource type -->
+                        <Label Grid.Column="0" WidthRequest="24" VerticalOptions="Center">
+                            <Label.Triggers>
+                                <DataTrigger TargetType="Label" Binding="{Binding Type}" Value="Queue">
+                                    <Setter Property="Text" Value="Q" />
+                                    <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                                </DataTrigger>
+                                <DataTrigger TargetType="Label" Binding="{Binding Type}" Value="Topic">
+                                    <Setter Property="Text" Value="T" />
+                                    <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource Gray300}}" />
+                                </DataTrigger>
+                                <DataTrigger TargetType="Label" Binding="{Binding Type}" Value="Subscription">
+                                    <Setter Property="Text" Value="S" />
+                                    <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Tertiary}, Dark={StaticResource Gray400}}" />
+                                </DataTrigger>
+                            </Label.Triggers>
+                        </Label>
+                        
+                        <VerticalStackLayout Grid.Column="1" Spacing="0">
+                            <Label Text="{Binding Name}" FontAttributes="Bold" />
+                            
+                            <!-- Show children if this is a topic with subscriptions -->
+                            <CollectionView ItemsSource="{Binding Children}" 
+                                           IsVisible="{Binding Children.Count, Converter={StaticResource CountGreaterThanZeroConverter}}"
+                                           Margin="15,0,0,0">
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate x:DataType="models:ServiceBusResourceItem">
+                                        <Grid Padding="2" ColumnDefinitions="Auto, *">
+                                            <Label Grid.Column="0" WidthRequest="24" Text="S" TextColor="{AppThemeBinding Light={StaticResource Tertiary}, Dark={StaticResource Gray400}}" VerticalOptions="Center" />
+                                            <Label Grid.Column="1" Text="{Binding Name}" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                        </VerticalStackLayout>
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentView> 

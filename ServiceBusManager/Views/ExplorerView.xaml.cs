@@ -2,17 +2,17 @@ using ServiceBusManager.ViewModels;
 
 namespace ServiceBusManager.Views;
 
-public partial class DetailsView : ContentView
+public partial class ExplorerView : ContentView
 {
     // Default constructor for XAML
-    public DetailsView()
+    public ExplorerView()
     {
         InitializeComponent();
         // No BindingContext set here - will be set externally
     }
 
     // Constructor for DI
-    public DetailsView(DetailsViewModel viewModel)
+    public ExplorerView(ExplorerViewModel viewModel)
     {
         InitializeComponent();
         BindingContext = viewModel;

@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using ServiceBusManager.Models;
 using ServiceBusManager.Services;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 
 namespace ServiceBusManager.ViewModels;
 
@@ -18,7 +19,7 @@ public partial class DetailsViewModel : ObservableObject
     private bool isDetailsVisible;
 
     [ObservableProperty]
-    private string selectedTab = "Properties";
+    private string selectedTab = "Overview";
 
     public ObservableCollection<LogItem> Logs => _loggingService.Logs;
 
@@ -26,25 +27,28 @@ public partial class DetailsViewModel : ObservableObject
     {
         _loggingService = loggingService;
         _serviceBusService = serviceBusService;
+        Debug.WriteLine("DetailsViewModel created");
     }
 
     [RelayCommand]
     private void SelectTab(string tabName)
     {
+        Debug.WriteLine($"Selecting tab: {tabName}");
         SelectedTab = tabName;
-        _loggingService.AddLog($"Selected tab: {tabName}");
     }
 
     public void SelectResource(ServiceBusResourceItem? resource)
     {
+        Debug.WriteLine($"DetailsViewModel.SelectResource: {resource?.Name}");
+        
         if (resource == null)
         {
             IsDetailsVisible = false;
+            SelectedResource = null;
             return;
         }
 
         SelectedResource = resource;
         IsDetailsVisible = true;
-        _loggingService.AddLog($"Selected resource: {resource.Name}");
     }
 } 

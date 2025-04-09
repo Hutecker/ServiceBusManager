@@ -2,6 +2,7 @@
 using ServiceBusManager.ViewModels;
 using ServiceBusManager.Services;
 using ServiceBusManager.Models;
+using ServiceBusManager.Views;
 
 namespace ServiceBusManager;
 
@@ -20,11 +21,19 @@ public static class MauiProgram
                 fonts.AddFont("Font-Awesome-6-Free-Solid-900.otf", "FontAwesomeSolid");
             });
 
+        // Register services first
         builder.Services.AddSingleton<IServiceBusService, ServiceBusService>();
         builder.Services.AddSingleton<ILoggingService, LoggingService>();
 
-        builder.Services.AddSingleton<MainPage>();
+        // Register ViewModels in dependency order
+        builder.Services.AddSingleton<DetailsViewModel>();
+        builder.Services.AddSingleton<ExplorerViewModel>();
         builder.Services.AddSingleton<MainViewModel>();
+
+        // Register Views
+        builder.Services.AddSingleton<DetailsView>();
+        builder.Services.AddSingleton<ExplorerView>();
+        builder.Services.AddSingleton<MainPage>();
 
 #if DEBUG
         builder.Logging.AddDebug();

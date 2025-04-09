@@ -3,39 +3,70 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:ServiceBusManager.ViewModels"
              x:Class="ServiceBusManager.Views.DetailsView"
-             x:DataType="vm:MainViewModel">
+             x:DataType="vm:DetailsViewModel">
 
-    <VerticalStackLayout Spacing="16" 
-                        Padding="16"
-                        BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}">
-        
-        <Label Text="Resource Details" 
-               FontSize="20" 
-               FontAttributes="Bold"/>
-        
-        <Frame Padding="16" 
-               BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray800}}">
-            <VerticalStackLayout Spacing="8">
-                <Label Text="{Binding SelectedResource.Name}" 
-                       FontSize="18" 
-                       FontAttributes="Bold"/>
-                
-                <Label Text="{Binding SelectedResource.Type}" 
-                       FontSize="14"
-                       TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"/>
-                
-                <Label Text="{Binding SelectedResource.Status}" 
-                       FontSize="14"
-                       TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"/>
-                
-                <Label Text="{Binding SelectedResource.Location}" 
-                       FontSize="14"
-                       TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"/>
-                
-                <Label Text="{Binding SelectedResource.ResourceGroup}" 
-                       FontSize="14"
-                       TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"/>
-            </VerticalStackLayout>
-        </Frame>
-    </VerticalStackLayout>
+    <Grid RowDefinitions="Auto, *">
+        <Label Text="Details" FontSize="16" FontAttributes="Bold" Grid.Row="0" Margin="0,0,0,5" VerticalOptions="Center"/>
+        <ContentView Grid.Row="1">
+            <Grid>
+                <!-- Default view when nothing is selected -->
+                <VerticalStackLayout IsVisible="{Binding SelectedResource, Converter={StaticResource IsNullConverter}}"
+                                   HorizontalOptions="Center" VerticalOptions="Center">
+                    <Label Text="Select an item in the Explorer to view details" 
+                          TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray300}}" />
+                </VerticalStackLayout>
+
+                <!-- Details view when a resource is selected -->
+                <Grid IsVisible="{Binding SelectedResource, Converter={StaticResource IsNotNullConverter}}"
+                     RowDefinitions="Auto, Auto, Auto, *">
+                    <Label Grid.Row="0" Text="{Binding SelectedResource.Name}" FontSize="Large" FontAttributes="Bold" />
+                    <Label Grid.Row="1" Text="{Binding SelectedResource.Type}" />
+                    
+                    <!-- Show parent info for subscriptions -->
+                    <StackLayout Grid.Row="2" Orientation="Horizontal" 
+                               IsVisible="{Binding SelectedResource.Parent, Converter={StaticResource IsNotNullConverter}}">
+                        <Label Text="Parent Topic: " />
+                        <Label Text="{Binding SelectedResource.Parent}" />
+                    </StackLayout>
+                    
+                    <!-- Additional details will go here -->
+                    <Grid Grid.Row="3" Margin="0,10,0,0" RowDefinitions="Auto, *">
+                        <HorizontalStackLayout Grid.Row="0" Spacing="10">
+                            <Button Text="Overview" 
+                                   Command="{Binding SelectTabCommand}" 
+                                   CommandParameter="Overview"
+                                   BackgroundColor="{Binding SelectedTab, Converter={StaticResource EqualityToBrushConverter}, ConverterParameter='Overview'}" />
+                            <Button Text="Messages" 
+                                   Command="{Binding SelectTabCommand}" 
+                                   CommandParameter="Messages"
+                                   BackgroundColor="{Binding SelectedTab, Converter={StaticResource EqualityToBrushConverter}, ConverterParameter='Messages'}" />
+                            <Button Text="Properties" 
+                                   Command="{Binding SelectTabCommand}" 
+                                   CommandParameter="Properties"
+                                   BackgroundColor="{Binding SelectedTab, Converter={StaticResource EqualityToBrushConverter}, ConverterParameter='Properties'}" />
+                        </HorizontalStackLayout>
+                        <Grid Grid.Row="1" Padding="10" Margin="0,5,0,0">
+                            <!-- Tab content -->
+                            <Grid>
+                                <!-- Overview Tab -->
+                                <VerticalStackLayout IsVisible="{Binding SelectedTab, Converter={StaticResource EqualityConverter}, ConverterParameter='Overview'}">
+                                    <Label Text="Overview details will go here" />
+                                </VerticalStackLayout>
+                                
+                                <!-- Messages Tab -->
+                                <VerticalStackLayout IsVisible="{Binding SelectedTab, Converter={StaticResource EqualityConverter}, ConverterParameter='Messages'}">
+                                    <Label Text="Message list will go here" />
+                                </VerticalStackLayout>
+                                
+                                <!-- Properties Tab -->
+                                <VerticalStackLayout IsVisible="{Binding SelectedTab, Converter={StaticResource EqualityConverter}, ConverterParameter='Properties'}">
+                                    <Label Text="Properties will go here" />
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </Grid>
+        </ContentView>
+    </Grid>
 </ContentView> 
