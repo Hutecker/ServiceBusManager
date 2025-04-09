@@ -2,21 +2,26 @@
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using Microsoft.Maui.ApplicationModel;
+using ServiceBusManager.Models;
 using ServiceBusManager.Models.Constants;
-using ServiceBusManager.Models.Enums;
+using ServiceBusManager.Services;
+using System.Threading.Tasks;
 
 namespace ServiceBusManager.ViewModels;
 
 public partial class MainViewModel : ObservableObject
 {
+    private readonly IServiceBusService _serviceBusService;
+    private readonly ILoggingService _loggingService;
+
     [ObservableProperty]
     private ObservableCollection<ServiceBusResourceItem> resources = new();
 
     [ObservableProperty]
     private ServiceBusResourceItem selectedResource;
 
-    [ObservableProperty]
-    private ObservableCollection<LogItem> logs = new();
+    // Expose Logs from the Logging Service
+    public ObservableCollection<LogItem> Logs => _loggingService.Logs;
 
     [ObservableProperty]
     private bool isLogsVisible = true;
@@ -30,32 +35,41 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private string themeIcon = FontAwesomeIcons.Sun;
 
-    public MainViewModel()
+    // Inject services
+    public MainViewModel(IServiceBusService serviceBusService, ILoggingService loggingService)
     {
+        _serviceBusService = serviceBusService;
+        _loggingService = loggingService;
+
         // Initialize theme icon based on current theme
         UpdateThemeIcon();
-        
-        // Add sample data - Replace with actual Service Bus API calls later
-        Resources.Add(new ServiceBusResourceItem 
-        { 
-            Name = "Queue1", 
-            Type = ResourceType.Queue,
-            Children = new ObservableCollection<ServiceBusResourceItem>()
-        });
-        
-        Resources.Add(new ServiceBusResourceItem 
-        { 
-            Name = "Topic1", 
-            Type = ResourceType.Topic,
-            Children = new ObservableCollection<ServiceBusResourceItem>
+                
+        // Add initial log via service
+        _loggingService.AddLog("Application started");
+
+        // Load resources asynchronously
+        LoadResourcesCommand.Execute(null);
+    }
+
+    [RelayCommand]
+    private async Task LoadResourcesAsync()
+    {
+        _loggingService.AddLog("Loading service bus resources...");
+        try
+        {
+            var fetchedResources = await _serviceBusService.GetResourcesAsync();
+            Resources.Clear();
+            foreach (var resource in fetchedResources)
             {
-                new ServiceBusResourceItem { Name = "Subscription1", Type = ResourceType.Subscription, Parent = "Topic1" },
-                new ServiceBusResourceItem { Name = "Subscription2", Type = ResourceType.Subscription, Parent = "Topic1" }
+                Resources.Add(resource);
             }
-        });
-        
-        // Add initial log
-        AddLog("Application started");
+            _loggingService.AddLog($"Loaded {Resources.Count} resources.");
+        }
+        catch (Exception ex)
+        { 
+            // Handle exceptions appropriately (e.g., show error message)
+            _loggingService.AddLog($"Error loading resources: {ex.Message}");
+        }
     }
 
     [RelayCommand]
@@ -65,7 +79,7 @@ public partial class MainViewModel : ObservableObject
         var newTheme = currentTheme == AppTheme.Dark ? AppTheme.Light : AppTheme.Dark;
         Application.Current.UserAppTheme = newTheme;
         UpdateThemeIcon();
-        AddLog($"Theme switched to {newTheme}");
+        _loggingService.AddLog($"Theme switched to {newTheme}");
     }
 
     private void UpdateThemeIcon()
@@ -76,22 +90,24 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand]
     private void SelectResource(ServiceBusResourceItem resource)
     {
+        if (resource == null) return;
         SelectedResource = resource;
-        AddLog($"Selected {resource.Type} '{resource.Name}'");
+        _loggingService.AddLog($"Selected {resource.Type} '{resource.Name}'");
     }
 
     [RelayCommand]
     private void ClearLogs()
     {
-        Logs.Clear();
-        AddLog("Logs cleared");
+        // Use the service
+        _loggingService.ClearLogs();
     }
 
     [RelayCommand]
     private void ToggleLogs()
     {
         IsLogsVisible = !IsLogsVisible;
-        AddLog($"Logs panel {(IsLogsVisible ? "shown" : "hidden")}");
+        // Log using the service after toggling state
+        _loggingService.AddLog($"Logs panel {(IsLogsVisible ? "shown" : "hidden")}");
     }
     
     [RelayCommand]
@@ -100,31 +116,7 @@ public partial class MainViewModel : ObservableObject
         if (index >= 0 && index < TabNames.Length)
         {
             SelectedTabIndex = index;
-            AddLog($"Selected tab: {TabNames[index]}");
+            _loggingService.AddLog($"Selected tab: {TabNames[index]}");
         }
     }
-
-    public void AddLog(string message)
-    {
-        Logs.Add(new LogItem
-        {
-            Timestamp = DateTime.Now,
-            Message = message
-        });
-    }
-}
-
-public class ServiceBusResourceItem
-{
-    public string Name { get; set; }
-    public ResourceType Type { get; set; }
-    public string Parent { get; set; }
-    public ObservableCollection<ServiceBusResourceItem> Children { get; set; } = new();
-}
-
-public class LogItem
-{
-    public DateTime Timestamp { get; set; }
-    public string Message { get; set; }
-    public string FormattedLog => $"[{Timestamp:HH:mm:ss}] {Message}";
 }

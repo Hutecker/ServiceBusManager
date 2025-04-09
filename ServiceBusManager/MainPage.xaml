@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ServiceBusManager.MainPage"
              xmlns:viewmodel="clr-namespace:ServiceBusManager.ViewModels"
+             xmlns:models="clr-namespace:ServiceBusManager.Models"
              x:DataType="viewmodel:MainViewModel"
              Padding="5">
 
@@ -50,7 +51,7 @@
                                 SelectionChangedCommand="{Binding SelectResourceCommand}"
                                 SelectionChangedCommandParameter="{Binding SelectedItem, Source={RelativeSource Self}}">
                     <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="viewmodel:ServiceBusResourceItem">
+                        <DataTemplate x:DataType="models:ServiceBusResourceItem">
                             <Grid Padding="5" ColumnDefinitions="Auto, *">
                                 <!-- Text-based indicator based on resource type -->
                                 <Label Grid.Column="0" WidthRequest="24" VerticalOptions="Center">
@@ -78,7 +79,7 @@
                                                    IsVisible="{Binding Children.Count, Converter={StaticResource CountGreaterThanZeroConverter}}"
                                                    Margin="15,0,0,0">
                                         <CollectionView.ItemTemplate>
-                                            <DataTemplate x:DataType="viewmodel:ServiceBusResourceItem">
+                                            <DataTemplate x:DataType="models:ServiceBusResourceItem">
                                                 <Grid Padding="2" ColumnDefinitions="Auto, *">
                                                     <Label Grid.Column="0" WidthRequest="24" Text="S" TextColor="{AppThemeBinding Light={StaticResource Tertiary}, Dark={StaticResource Gray400}}" VerticalOptions="Center" />
                                                     <Label Grid.Column="1" Text="{Binding Name}" />
@@ -213,7 +214,7 @@
                 <ScrollView Grid.Row="1" IsVisible="{Binding IsLogsVisible}">
                     <CollectionView ItemsSource="{Binding Logs}" MinimumHeightRequest="150">
                         <CollectionView.ItemTemplate>
-                            <DataTemplate x:DataType="viewmodel:LogItem">
+                            <DataTemplate x:DataType="models:LogItem">
                                 <Label Text="{Binding FormattedLog}" Padding="2" />
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
