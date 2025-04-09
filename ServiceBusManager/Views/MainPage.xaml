@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ServiceBusManager.ViewModels"
+             xmlns:views="clr-namespace:ServiceBusManager.Views"
+             xmlns:models="clr-namespace:ServiceBusManager.Models"
+             x:Class="ServiceBusManager.Views.MainPage"
+             x:DataType="vm:MainViewModel">
+
+    <Grid RowDefinitions="*,Auto">
+        <Grid ColumnDefinitions="*,Auto">
+            <!-- Main Content -->
+            <VerticalStackLayout Grid.Column="0" 
+                                Spacing="16" 
+                                Padding="16">
+                <Label Text="Service Bus Resources" 
+                       FontSize="24" 
+                       FontAttributes="Bold"/>
+                
+                <CollectionView ItemsSource="{Binding Resources}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:ServiceBusResourceItem">
+                            <Border StrokeShape="RoundRectangle 8"
+                                    StrokeThickness="0"
+                                    Padding="16"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray800}}">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <VerticalStackLayout Grid.Column="0">
+                                        <Label Text="{Binding Name}" 
+                                               FontSize="18" 
+                                               FontAttributes="Bold"/>
+                                        <Label Text="{Binding Type}" 
+                                               FontSize="14"
+                                               TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"/>
+                                    </VerticalStackLayout>
+                                    <Button Text="View Details"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MainViewModel}}, Path=SelectResourceCommand}"
+                                            CommandParameter="{Binding}"
+                                            Grid.Column="1"
+                                            VerticalOptions="Center"/>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
+
+            <!-- Details Panel -->
+            <views:DetailsView Grid.Column="1" 
+                              WidthRequest="400"/>
+        </Grid>
+
+        <!-- Logs Panel -->
+        <Grid Grid.Row="1"
+              RowDefinitions="Auto,*"
+              Margin="16">
+            <Border StrokeShape="RoundRectangle 8"
+                    StrokeThickness="0"
+                    Padding="16"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray800}}">
+                <Grid ColumnDefinitions="*,Auto">
+                    <Label Text="Activity Log" 
+                           FontSize="18" 
+                           FontAttributes="Bold"/>
+                    <HorizontalStackLayout Grid.Column="1" 
+                                          Spacing="8">
+                        <Button Text="{Binding IsLogsVisible, Converter={StaticResource BooleanToHideShowTextConverter}}"
+                                Command="{Binding ToggleLogsCommand}"/>
+                        <Button Text="Clear"
+                                Command="{Binding ClearLogsCommand}"/>
+                    </HorizontalStackLayout>
+                </Grid>
+            </Border>
+            
+            <Border Grid.Row="1"
+                    StrokeShape="RoundRectangle 8"
+                    StrokeThickness="0"
+                    IsVisible="{Binding IsLogsVisible}"
+                    Padding="16"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray800}}">
+                <CollectionView ItemsSource="{Binding Logs}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:LogItem">
+                            <Grid ColumnDefinitions="Auto,*" 
+                                  Padding="0,4">
+                                <Label Text="{Binding Timestamp, StringFormat='{0:HH:mm:ss}'}" 
+                                       FontSize="14"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"
+                                       Grid.Column="0"/>
+                                <Label Text="{Binding Message}" 
+                                       FontSize="14"
+                                       Grid.Column="1"
+                                       Margin="8,0,0,0"/>
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Border>
+        </Grid>
+    </Grid>
+</ContentPage> 

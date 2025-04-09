@@ -6,6 +6,8 @@ using ServiceBusManager.Models;
 using ServiceBusManager.Models.Constants;
 using ServiceBusManager.Services;
 using System.Threading.Tasks;
+using System.Windows.Input;
+using System.Linq;
 
 namespace ServiceBusManager.ViewModels;
 
@@ -13,6 +15,7 @@ public partial class MainViewModel : ObservableObject
 {
     private readonly IServiceBusService _serviceBusService;
     private readonly ILoggingService _loggingService;
+    private readonly ObservableCollection<LogItem> _sortedLogs = new();
 
     [ObservableProperty]
     private ObservableCollection<ServiceBusResourceItem> resources = new();
@@ -20,8 +23,8 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private ServiceBusResourceItem selectedResource;
 
-    // Expose Logs from the Logging Service
-    public ObservableCollection<LogItem> Logs => _loggingService.Logs;
+    // Expose sorted Logs from the Logging Service
+    public ObservableCollection<LogItem> Logs => _sortedLogs;
 
     [ObservableProperty]
     private bool isLogsVisible = true;
@@ -40,6 +43,16 @@ public partial class MainViewModel : ObservableObject
     {
         _serviceBusService = serviceBusService;
         _loggingService = loggingService;
+
+        // Subscribe to log changes
+        _loggingService.Logs.CollectionChanged += (s, e) =>
+        {
+            _sortedLogs.Clear();
+            foreach (var log in _loggingService.Logs.OrderByDescending(l => l.Timestamp))
+            {
+                _sortedLogs.Add(log);
+            }
+        };
 
         // Initialize theme icon based on current theme
         UpdateThemeIcon();
