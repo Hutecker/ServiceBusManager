@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using ServiceBusManager.Models;
 using ServiceBusManager.Models.Constants;
 using ServiceBusManager.Services;
-using Microsoft.Maui.ApplicationModel;
 using System.Diagnostics;
 
 namespace ServiceBusManager.ViewModels;
