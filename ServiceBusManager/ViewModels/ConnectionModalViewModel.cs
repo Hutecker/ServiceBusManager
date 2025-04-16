@@ -59,6 +59,9 @@ public partial class ConnectionModalViewModel : ObservableObject
     private void Hide(bool wasConnected)
     {
         IsVisible = false;
+        SelectedConnection = null;
+        ConnectionName = string.Empty;
+        ConnectionString = string.Empty;
         DialogClosed?.Invoke(wasConnected);
     }
     
@@ -68,19 +71,25 @@ public partial class ConnectionModalViewModel : ObservableObject
         try
         {
             var connections = await _connectionStorageService.GetConnectionsAsync();
+            Debug.WriteLine($"Loaded {connections.Count} connections from storage");
+            
             SavedConnections.Clear();
             
             if (!connections.Any())
             {
+                Debug.WriteLine("No connections found, adding placeholder");
                 SavedConnections.Add(new SavedConnection { Name = "No saved connections" });
             }
             else
             {
                 foreach (var connection in connections.OrderByDescending(c => c.LastUsedAt))
                 {
+                    Debug.WriteLine($"Adding connection: {connection.Name}");
                     SavedConnections.Add(connection);
                 }
             }
+            
+            Debug.WriteLine($"Final SavedConnections count: {SavedConnections.Count}");
         }
         catch (Exception ex)
         {
@@ -149,8 +158,8 @@ public partial class ConnectionModalViewModel : ObservableObject
                 LastUsedAt = DateTime.UtcNow
             };
             
-            await _connectionStorageService.SaveConnectionAsync(connection);
             await _serviceBusService.SetConnectionStringAsync(ConnectionString);
+            await _connectionStorageService.SaveConnectionAsync(connection);
             _loggingService.AddLog($"Saved and connected to: {ConnectionName}");
             Hide(true);
         }

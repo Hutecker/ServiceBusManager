@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:ServiceBusManager.ViewModels"
              xmlns:models="clr-namespace:ServiceBusManager.Models"
+             xmlns:controls="clr-namespace:ServiceBusManager.Controls"
              x:Class="ServiceBusManager.Views.ConnectionModal"
              x:DataType="vm:ConnectionModalViewModel"
              IsVisible="{Binding IsVisible}">
@@ -11,10 +12,7 @@
     <ContentView.Content>
         <Grid BackgroundColor="#80000000" InputTransparent="False">
             <!-- Modal content -->
-            <Border Stroke="{StaticResource Gray300}"
-                    StrokeThickness="1" 
-                    Background="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
-                    Padding="20"
+            <Border Padding="20"
                     VerticalOptions="Center"
                     HorizontalOptions="Center"
                     WidthRequest="600">
@@ -32,46 +30,31 @@
                     
                     <!-- Saved Connections -->
                     <Grid Grid.Row="2" ColumnDefinitions="*,Auto" ColumnSpacing="10">
-                        <Border HeightRequest="100">
+                        <Border MinimumHeightRequest="100" MaximumHeightRequest="200">
                             <CollectionView ItemsSource="{Binding SavedConnections}"
                                           SelectedItem="{Binding SelectedConnection}"
                                           SelectionMode="Single"
                                           SelectionChangedCommand="{Binding SelectConnectionCommand}">
                                 <CollectionView.ItemTemplate>
                                     <DataTemplate x:DataType="models:SavedConnection">
-                                        <Grid Padding="10,5">
-                                            <VisualStateManager.VisualStateGroups>
-                                                <VisualStateGroup x:Name="CommonStates">
-                                                    <VisualState x:Name="Normal" />
-                                                    <VisualState x:Name="Selected">
-                                                        <VisualState.Setters>
-                                                            <Setter Property="BackgroundColor" 
-                                                                    Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray800}}" />
-                                                        </VisualState.Setters>
-                                                    </VisualState>
-                                                </VisualStateGroup>
-                                            </VisualStateManager.VisualStateGroups>
-                                            <Label Text="{Binding Name}"
-                                                   FontSize="14"
-                                                   TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"
-                                                   VerticalOptions="Center" />
+                                        <Grid Style="{StaticResource listItemGrid}">
+                                            <Label Text="{Binding Name}" />
                                         </Grid>
                                     </DataTemplate>
                                 </CollectionView.ItemTemplate>
                             </CollectionView>
                         </Border>
                         
-                        <Button Text="Delete"
-                                Command="{Binding DeleteConnectionCommand}"
-                                Grid.Column="1"
-                                IsVisible="{Binding SelectedConnection, Converter={StaticResource IsNotNullConverter}}" />
+                        <controls:ConfirmationButton Text="Delete"
+                                                   OriginalText="Delete"
+                                                   ConfirmationCommand="{Binding DeleteConnectionCommand}"
+                                                   Grid.Column="1"
+                                                   IsVisible="{Binding SelectedConnection, Converter={StaticResource IsNotNullConverter}}" />
                     </Grid>
                     
                     <!-- Connection Name -->
                     <Label Text="Connection Name:"
-                           Grid.Row="3"
-                           FontSize="14"
-                           TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
+                           Grid.Row="3" />
                     <Entry Grid.Row="4"
                            Text="{Binding ConnectionName}"
                            Placeholder="Connection name (required for saving)" 
@@ -79,12 +62,10 @@
                     
                     <!-- Connection String Entry -->
                     <Label Text="Connection String:"
-                           Grid.Row="5"
-                           FontSize="14"
-                           TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
+                           Grid.Row="5" />
                     <Entry Grid.Row="6"
                            Text="{Binding ConnectionString}"
-                           Placeholder="Enter connection string (required)" 
+                           Placeholder="Connection string (required)" 
                            IsPassword="True"
                            VerticalOptions="Start" />
                     

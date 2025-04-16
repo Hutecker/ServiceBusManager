@@ -4,6 +4,7 @@ using Microsoft.Maui.Storage;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
+using System.Diagnostics;
 
 namespace ServiceBusManager.Services;
 
@@ -45,15 +46,21 @@ public class ConnectionStorageService : IConnectionStorageService
         try
         {
             var json = await SecureStorage.GetAsync(ConnectionsKey);
+            Debug.WriteLine($"Retrieved JSON from storage: {json}");
+            
             if (string.IsNullOrEmpty(json))
             {
+                Debug.WriteLine("No connections found in storage");
                 return new List<SavedConnection>();
             }
 
-            return JsonSerializer.Deserialize<List<SavedConnection>>(json) ?? new List<SavedConnection>();
+            var connections = JsonSerializer.Deserialize<List<SavedConnection>>(json) ?? new List<SavedConnection>();
+            Debug.WriteLine($"Deserialized {connections.Count} connections");
+            return connections;
         }
         catch (Exception ex)
         {
+            Debug.WriteLine($"Error getting connections: {ex.Message}");
             _loggingService.AddLog($"Error getting connections: {ex.Message}");
             return new List<SavedConnection>();
         }

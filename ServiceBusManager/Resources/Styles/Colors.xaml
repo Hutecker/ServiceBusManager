@@ -16,7 +16,7 @@
     <!-- Neutral Base -->
     <Color x:Key="White">#EEEEED</Color>
     <Color x:Key="Black">#1C1C1E</Color>
-    <Color x:Key="MidnightBlue">#190649</Color>
+    <Color x:Key="MidnightBlue">#131991</Color>
 
     <Color x:Key="Gray100">#F8F9FA</Color>
     <Color x:Key="Gray200">#E1E5EA</Color>
@@ -26,6 +26,10 @@
     <Color x:Key="Gray600">#6E6E6E</Color>
     <Color x:Key="Gray900">#2F3B52</Color>
     <Color x:Key="Gray950">#1C1C1E</Color>
+    
+    <!-- Warning/Error -->
+    <Color x:Key="Warning">#F5D32C</Color>
+    <Color x:Key="Error">#DF5810</Color>
 
     <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource Primary}"/>
     <SolidColorBrush x:Key="SecondaryBrush" Color="{StaticResource Secondary}"/>
