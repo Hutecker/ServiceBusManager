@@ -17,10 +17,9 @@
                     Padding="20"
                     VerticalOptions="Center"
                     HorizontalOptions="Center"
-                    WidthRequest="500"
-                    HeightRequest="350">
+                    WidthRequest="600">
                 
-                <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto" RowSpacing="10">
+                <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" RowSpacing="10">
                     <!-- Header -->
                     <Label Text="Service Bus Connection" 
                            FontSize="18" 
@@ -41,6 +40,17 @@
                                 <CollectionView.ItemTemplate>
                                     <DataTemplate x:DataType="models:SavedConnection">
                                         <Grid Padding="10,5">
+                                            <VisualStateManager.VisualStateGroups>
+                                                <VisualStateGroup x:Name="CommonStates">
+                                                    <VisualState x:Name="Normal" />
+                                                    <VisualState x:Name="Selected">
+                                                        <VisualState.Setters>
+                                                            <Setter Property="BackgroundColor" 
+                                                                    Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray800}}" />
+                                                        </VisualState.Setters>
+                                                    </VisualState>
+                                                </VisualStateGroup>
+                                            </VisualStateManager.VisualStateGroups>
                                             <Label Text="{Binding Name}"
                                                    FontSize="14"
                                                    TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"
@@ -54,24 +64,32 @@
                         <Button Text="Delete"
                                 Command="{Binding DeleteConnectionCommand}"
                                 Grid.Column="1"
-                                IsEnabled="{Binding SelectedConnection.Name, Converter={StaticResource IsNotNullConverter}, ConverterParameter='No saved connections'}" />
+                                IsVisible="{Binding SelectedConnection, Converter={StaticResource IsNotNullConverter}}" />
                     </Grid>
                     
                     <!-- Connection Name -->
-                    <Entry Grid.Row="3"
+                    <Label Text="Connection Name:"
+                           Grid.Row="3"
+                           FontSize="14"
+                           TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
+                    <Entry Grid.Row="4"
                            Text="{Binding ConnectionName}"
                            Placeholder="Connection name (required for saving)" 
                            VerticalOptions="Start" />
                     
                     <!-- Connection String Entry -->
-                    <Entry Grid.Row="4"
+                    <Label Text="Connection String:"
+                           Grid.Row="5"
+                           FontSize="14"
+                           TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
+                    <Entry Grid.Row="6"
                            Text="{Binding ConnectionString}"
                            Placeholder="Enter connection string (required)" 
                            IsPassword="True"
                            VerticalOptions="Start" />
                     
                     <!-- Buttons -->
-                    <Grid Grid.Row="5" ColumnDefinitions="*,*,*" ColumnSpacing="10">
+                    <Grid Grid.Row="7" ColumnDefinitions="*,*,*" ColumnSpacing="10">
                         <Button Text="Cancel"
                                 Grid.Column="0"
                                 Command="{Binding CancelCommand}" />
@@ -88,10 +106,9 @@
                     </Grid>
                     
                     <!-- Last Used Info -->
-                    <Label Grid.Row="6"
+                    <Label Grid.Row="8"
                            Text="{Binding SelectedConnection.LastUsedAt, StringFormat='Last used: {0:g}'}"
                            IsVisible="{Binding SelectedConnection, Converter={StaticResource IsNotNullConverter}}"
-                           IsEnabled="{Binding SelectedConnection.Name, Converter={StaticResource IsNullConverter}, ConverterParameter='No saved connections'}"
                            FontSize="12"
                            TextColor="{StaticResource Gray500}" />
                 </Grid>
