@@ -77,10 +77,10 @@ public partial class ExplorerViewModel : ObservableObject
     }
     
     [RelayCommand]
-    private void ShowConnectionDialog()
+    private async Task ShowConnectionDialog()
     {
         Debug.WriteLine("Showing connection dialog");
-        _connectionModalViewModel.Show();
+        await _connectionModalViewModel.Show();
         
         // Subscribe to dialog closed event to refresh resources
         _connectionModalViewModel.DialogClosed += OnConnectionDialogClosed;
