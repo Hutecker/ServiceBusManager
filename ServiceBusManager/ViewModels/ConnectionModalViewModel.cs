@@ -176,7 +176,7 @@ public partial class ConnectionModalViewModel : ObservableObject
     }
     
     [RelayCommand]
-    private void SelectConnection()
+    private async Task SelectConnection()
     {
         if (SelectedConnection == null || SelectedConnection.Name == "No saved connections") return;
         
@@ -184,12 +184,24 @@ public partial class ConnectionModalViewModel : ObservableObject
         {
             ConnectionName = SelectedConnection.Name;
             ConnectionString = SelectedConnection.ConnectionString;
-            _connectionStorageService.UpdateConnectionLastUsedAsync(SelectedConnection.Name).ConfigureAwait(false);
+            await _connectionStorageService.UpdateConnectionLastUsedAsync(SelectedConnection.Name);
+            
+            // Connect using the selected connection string
+            await _serviceBusService.SetConnectionStringAsync(ConnectionString);
+            _loggingService.AddLog($"Connected to Service Bus using saved connection: {ConnectionName}");
+            
+            // Hide the dialog and indicate successful connection
+            Hide(true);
         }
         catch (Exception ex)
         {
             Debug.WriteLine($"Error selecting connection: {ex.Message}");
             _loggingService.AddLog($"Error selecting connection: {ex.Message}");
+            
+            if (Application.Current?.Windows?.FirstOrDefault()?.Page is Page page)
+            {
+                await page.DisplayAlert("Error", $"Failed to connect: {ex.Message}", "OK");
+            }
         }
     }
     
