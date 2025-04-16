@@ -41,8 +41,7 @@
 
     <Grid RowDefinitions="3*, 5, auto" ColumnDefinitions="1*, 5, 3*">
         <!-- Explorer Panel (Top Left) -->
-        <Border Grid.Row="0" Grid.Column="0" Stroke="{StaticResource Gray300}"
-                StrokeThickness="1" Padding="5" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}">
+        <Border Grid.Row="0" Grid.Column="0">
             <views:ExplorerView />
         </Border>
 
@@ -55,8 +54,7 @@
         </BoxView>
 
         <!-- Details Panel (Top Right) -->
-        <Border Grid.Row="0" Grid.Column="2" Stroke="{StaticResource Gray300}" 
-                StrokeThickness="1" Padding="5" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}">
+        <Border Grid.Row="0" Grid.Column="2">
             <views:DetailsView />
         </Border>
 
@@ -69,8 +67,7 @@
         </BoxView>
 
         <!-- Logs Panel (Bottom) -->
-        <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Padding="5" 
-                BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}">
+        <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3">
             <views:LogsView />
         </Border>
         

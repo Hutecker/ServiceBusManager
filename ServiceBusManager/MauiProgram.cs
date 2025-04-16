@@ -24,6 +24,7 @@ public static class MauiProgram
         // Register services first
         builder.Services.AddSingleton<IServiceBusService, ServiceBusService>();
         builder.Services.AddSingleton<ILoggingService, LoggingService>();
+        builder.Services.AddSingleton<IConnectionStorageService, ConnectionStorageService>();
 
         // Register ViewModels in dependency order
         builder.Services.AddSingleton<ConnectionModalViewModel>();

@@ -2,6 +2,7 @@
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:ServiceBusManager.ViewModels"
+             xmlns:models="clr-namespace:ServiceBusManager.Models"
              x:Class="ServiceBusManager.Views.ConnectionModal"
              x:DataType="vm:ConnectionModalViewModel"
              IsVisible="{Binding IsVisible}">
@@ -16,9 +17,10 @@
                     Padding="20"
                     VerticalOptions="Center"
                     HorizontalOptions="Center"
-                    WidthRequest="400"
-                    HeightRequest="250">
-                <Grid RowDefinitions="Auto, Auto, *, Auto" RowSpacing="15">
+                    WidthRequest="500"
+                    HeightRequest="350">
+                
+                <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto" RowSpacing="10">
                     <!-- Header -->
                     <Label Text="Service Bus Connection" 
                            FontSize="18" 
@@ -26,26 +28,72 @@
                            Grid.Row="0" />
                     
                     <!-- Description -->
-                    <Label Text="Enter your Azure Service Bus connection string:" 
+                    <Label Text="Select a saved connection or enter a new one:" 
                            Grid.Row="1" />
                     
+                    <!-- Saved Connections -->
+                    <Grid Grid.Row="2" ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                        <Border HeightRequest="100">
+                            <CollectionView ItemsSource="{Binding SavedConnections}"
+                                          SelectedItem="{Binding SelectedConnection}"
+                                          SelectionMode="Single"
+                                          SelectionChangedCommand="{Binding SelectConnectionCommand}">
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate x:DataType="models:SavedConnection">
+                                        <Grid Padding="10,5">
+                                            <Label Text="{Binding Name}"
+                                                   FontSize="14"
+                                                   TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"
+                                                   VerticalOptions="Center" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                        </Border>
+                        
+                        <Button Text="Delete"
+                                Command="{Binding DeleteConnectionCommand}"
+                                Grid.Column="1"
+                                IsEnabled="{Binding SelectedConnection.Name, Converter={StaticResource IsNotNullConverter}, ConverterParameter='No saved connections'}" />
+                    </Grid>
+                    
+                    <!-- Connection Name -->
+                    <Entry Grid.Row="3"
+                           Text="{Binding ConnectionName}"
+                           Placeholder="Connection name (required for saving)" 
+                           VerticalOptions="Start" />
+                    
                     <!-- Connection String Entry -->
-                    <Entry Grid.Row="2"
+                    <Entry Grid.Row="4"
                            Text="{Binding ConnectionString}"
-                           Placeholder="Enter connection string" 
+                           Placeholder="Enter connection string (required)" 
                            IsPassword="True"
                            VerticalOptions="Start" />
                     
                     <!-- Buttons -->
-                    <Grid Grid.Row="3" ColumnDefinitions="*, *" ColumnSpacing="10">
+                    <Grid Grid.Row="5" ColumnDefinitions="*,*,*" ColumnSpacing="10">
                         <Button Text="Cancel"
                                 Grid.Column="0"
                                 Command="{Binding CancelCommand}" />
                         
-                        <Button Text="Save"
+                        <Button Text="Connect"
                                 Grid.Column="1"
-                                Command="{Binding SaveCommand}" />
+                                Command="{Binding ConnectCommand}"
+                                IsEnabled="{Binding CanConnect}" />
+                        
+                        <Button Text="Save &amp; Connect"
+                                Grid.Column="2"
+                                Command="{Binding SaveAndConnectCommand}"
+                                IsEnabled="{Binding CanSaveAndConnect}" />
                     </Grid>
+                    
+                    <!-- Last Used Info -->
+                    <Label Grid.Row="6"
+                           Text="{Binding SelectedConnection.LastUsedAt, StringFormat='Last used: {0:g}'}"
+                           IsVisible="{Binding SelectedConnection, Converter={StaticResource IsNotNullConverter}}"
+                           IsEnabled="{Binding SelectedConnection.Name, Converter={StaticResource IsNullConverter}, ConverterParameter='No saved connections'}"
+                           FontSize="12"
+                           TextColor="{StaticResource Gray500}" />
                 </Grid>
             </Border>
         </Grid>
