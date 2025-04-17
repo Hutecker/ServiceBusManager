@@ -33,12 +33,21 @@ public partial class ServiceBusResourceItem : ObservableObject
 
     [ObservableProperty]
     private long scheduledMessageCount;
+
+    [ObservableProperty]
+    private string messageCountDisplay;
     
-    // Formatted message count string for display
-    public string MessageCountDisplay => 
-        Type == ResourceType.Queue
+    partial void OnActiveMessageCountChanged(long value) => UpdateMessageCountDisplay();
+    partial void OnDeadLetterMessageCountChanged(long value) => UpdateMessageCountDisplay();
+    partial void OnScheduledMessageCountChanged(long value) => UpdateMessageCountDisplay();
+    partial void OnTypeChanged(ResourceType value) => UpdateMessageCountDisplay();
+
+    private void UpdateMessageCountDisplay()
+    {
+        MessageCountDisplay = Type == ResourceType.Queue
             ? $"Active: {ActiveMessageCount} | Dead: {DeadLetterMessageCount} | Scheduled: {ScheduledMessageCount}"
             : Type == ResourceType.Subscription
                 ? $"Active: {ActiveMessageCount} | Dead: {DeadLetterMessageCount} | Transfer: {ScheduledMessageCount}"
                 : string.Empty;
+    }
 } 

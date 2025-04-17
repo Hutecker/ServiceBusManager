@@ -6,7 +6,7 @@
              x:DataType="vm:DetailsViewModel">
 
     <Grid RowDefinitions="Auto, *">
-        <Label Text="Details" FontSize="16" FontAttributes="Bold" Grid.Row="0" Margin="0,0,0,5" VerticalOptions="Center"/>
+        <Label Text="Details" FontSize="16" FontAttributes="Bold" Grid.Row="0" Margin="0,10,0,5" VerticalOptions="Center"/>
         <ContentView Grid.Row="1">
             <Grid>
                 <!-- Default view when nothing is selected -->

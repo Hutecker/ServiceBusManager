@@ -95,6 +95,8 @@ public partial class ExplorerViewModel : ObservableObject
                     }
                 }
             }
+            
+            _loggingService.AddLog("Message counts refreshed");
         }
         catch (Exception ex)
         {
