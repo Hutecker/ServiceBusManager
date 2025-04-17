@@ -9,7 +9,7 @@
     <!-- New inner Grid for Header and Content -->
     <Grid RowDefinitions="Auto, *">
         <!-- Header Row -->
-        <Grid Grid.Row="0" ColumnDefinitions="*, Auto, Auto">
+        <Grid Grid.Row="0" ColumnDefinitions="*, Auto, Auto" Padding="10">
             <!-- Logs Label - Always Visible -->
             <Label Text="Logs" FontSize="16" FontAttributes="Bold" Grid.Column="0"/>
             

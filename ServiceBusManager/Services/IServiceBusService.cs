@@ -19,6 +19,7 @@ public interface IServiceBusService
     Task<QueueProperties> GetQueuePropertiesAsync(string queueName);
     Task<TopicProperties> GetTopicPropertiesAsync(string topicName);
     Task<SubscriptionProperties> GetSubscriptionPropertiesAsync(string topicName, string subscriptionName);
+    Task<(long Active, long DeadLetter, long Scheduled)> GetMessageCountsAsync(string queueOrSubscriptionPath);
     
     // Message operations
     Task<IEnumerable<ServiceBusReceivedMessage>> PeekMessagesAsync(string queueOrSubscriptionPath, int maxMessages);

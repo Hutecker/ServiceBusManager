@@ -434,4 +434,28 @@ public class ServiceBusService : IServiceBusService
             throw;
         }
     }
+
+    public async Task<(long Active, long DeadLetter, long Scheduled)> GetMessageCountsAsync(string queueOrSubscriptionPath)
+    {
+        if (!_isConnected) throw new InvalidOperationException("Not connected to Service Bus");
+        
+        try
+        {
+            var runtimeInfo = await _adminClient!.GetQueueRuntimePropertiesAsync(queueOrSubscriptionPath);
+            return (runtimeInfo.Value.ActiveMessageCount, runtimeInfo.Value.DeadLetterMessageCount, runtimeInfo.Value.ScheduledMessageCount);
+        }
+        catch (Exception)
+        {
+            // If it's not a queue, try getting subscription runtime info
+            var parts = queueOrSubscriptionPath.Split('/');
+            if (parts.Length == 2)
+            {
+                var runtimeInfo = await _adminClient!.GetSubscriptionRuntimePropertiesAsync(parts[0], parts[1]);
+                // For subscriptions, we use TransferMessageCount in place of ScheduledMessageCount
+                return (runtimeInfo.Value.ActiveMessageCount, runtimeInfo.Value.DeadLetterMessageCount, runtimeInfo.Value.TransferMessageCount);
+            }
+            
+            throw;
+        }
+    }
 }

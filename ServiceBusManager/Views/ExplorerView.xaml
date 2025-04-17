@@ -1,40 +1,38 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="ServiceBusManager.Views.ExplorerView"
-             xmlns:viewmodel="clr-namespace:ServiceBusManager.ViewModels"
+             xmlns:vm="clr-namespace:ServiceBusManager.ViewModels"
              xmlns:models="clr-namespace:ServiceBusManager.Models"
-             x:DataType="viewmodel:ExplorerViewModel">
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:converters="clr-namespace:ServiceBusManager.Converters"
+             x:Class="ServiceBusManager.Views.ExplorerView"
+             x:DataType="vm:ExplorerViewModel">
+
+    <ContentPage.Resources>
+        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+    </ContentPage.Resources>
 
     <Grid RowDefinitions="Auto, *">
-        <!-- Header with Explorer text and add button -->
-        <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Margin="0,0,0,5" VerticalOptions="Start">
-            <Label Text="Explorer" 
-                   FontSize="16" 
-                   FontAttributes="Bold" 
-                   Grid.Column="0" 
-                   VerticalOptions="Start"
-                   Padding="0,0,0,0"/>
-            <Label Text="+" 
-                   FontSize="22" 
-                   FontAttributes="Bold"
-                   Grid.Column="1" 
-                   VerticalOptions="Center"
-                   HorizontalOptions="End"
-                   Margin="0,-5,5,0">
-                <Label.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding ShowConnectionDialogCommand}" />
-                </Label.GestureRecognizers>
-            </Label>
+        <!-- Header with buttons -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto" Padding="10">
+            <Label Text="Explorer" FontSize="16" FontAttributes="Bold" Grid.Column="0" />
+            
+            <Button Grid.Column="1" 
+                    Text="Refresh"
+                    Command="{Binding RefreshMessageCountsCommand}"
+                    IsEnabled="{Binding IsRefreshing, Converter={StaticResource InverseBooleanConverter}}"
+                    Margin="0,0,5,0" />
+            
+            <Button Grid.Column="2" 
+                    Text="+" 
+                    Command="{Binding ShowConnectionDialogCommand}" />
         </Grid>
-        
-        <!-- Tree View Using Collection View with Templates -->
+        <!-- Resources list -->
         <CollectionView Grid.Row="1" 
-                        ItemsSource="{Binding Resources}"
-                        SelectionMode="Single"
-                        SelectedItem="{Binding SelectedResource}"
-                        SelectionChangedCommand="{Binding SelectResourceCommand}"
-                        SelectionChangedCommandParameter="{Binding SelectedResource}">
+                      ItemsSource="{Binding Resources}"
+                      SelectionMode="Single"
+                      SelectedItem="{Binding SelectedResource}"
+                      SelectionChangedCommand="{Binding SelectResourceCommand}">
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:ServiceBusResourceItem">
                     <Grid Padding="5" ColumnDefinitions="Auto, *">
@@ -57,7 +55,14 @@
                         </Label>
                         
                         <VerticalStackLayout Grid.Column="1" Spacing="0">
-                            <Label Text="{Binding Name}" FontAttributes="Bold" />
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Label Text="{Binding Name}" FontAttributes="Bold" />
+                                <Label Grid.Column="1" 
+                                       Text="{Binding MessageCountDisplay}"
+                                       FontSize="12"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}"
+                                       IsVisible="{Binding MessageCountDisplay, Converter={StaticResource IsNotNullConverter}}" />
+                            </Grid>
                             
                             <!-- Show children if this is a topic with subscriptions -->
                             <CollectionView ItemsSource="{Binding Children}" 
@@ -65,9 +70,13 @@
                                            Margin="15,0,0,0">
                                 <CollectionView.ItemTemplate>
                                     <DataTemplate x:DataType="models:ServiceBusResourceItem">
-                                        <Grid Padding="2" ColumnDefinitions="Auto, *">
+                                        <Grid Padding="2" ColumnDefinitions="Auto, *,Auto">
                                             <Label Grid.Column="0" WidthRequest="24" Text="S" TextColor="{AppThemeBinding Light={StaticResource Tertiary}, Dark={StaticResource Gray400}}" VerticalOptions="Center" />
                                             <Label Grid.Column="1" Text="{Binding Name}" />
+                                            <Label Grid.Column="2" 
+                                                   Text="{Binding MessageCountDisplay}"
+                                                   FontSize="12"
+                                                   TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
                                         </Grid>
                                     </DataTemplate>
                                 </CollectionView.ItemTemplate>
