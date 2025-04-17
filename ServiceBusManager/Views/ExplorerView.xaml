@@ -16,7 +16,7 @@
     <Grid RowDefinitions="Auto, *">
         <!-- Header with buttons -->
         <Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto,Auto" Padding="10">
-            <Label Text="Explorer" FontSize="16" FontAttributes="Bold" VerticalOptions="Center" />
+            <Label Text="Explorer" FontSize="16" FontAttributes="Bold" />
             
             <controls:RefreshTimerIndicator Grid.Column="1" 
                                           Progress="{Binding RefreshProgress}"
