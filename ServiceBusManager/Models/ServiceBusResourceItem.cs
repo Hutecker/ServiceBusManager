@@ -1,6 +1,7 @@
 using ServiceBusManager.Models.Enums;
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using System.Linq;
 
 namespace ServiceBusManager.Models;
 
@@ -44,10 +45,24 @@ public partial class ServiceBusResourceItem : ObservableObject
 
     private void UpdateMessageCountDisplay()
     {
-        MessageCountDisplay = Type == ResourceType.Queue
-            ? $"Active: {ActiveMessageCount} | Dead: {DeadLetterMessageCount} | Scheduled: {ScheduledMessageCount}"
-            : Type == ResourceType.Subscription
-                ? $"Active: {ActiveMessageCount} | Dead: {DeadLetterMessageCount} | Transfer: {ScheduledMessageCount}"
-                : string.Empty;
+        switch (Type)
+        {
+            case ResourceType.Queue:
+                MessageCountDisplay = $"Active: {ActiveMessageCount} | Dead: {DeadLetterMessageCount} | Scheduled: {ScheduledMessageCount}";
+                break;
+            case ResourceType.Topic:
+                // For topics, show the sum of all subscription message counts
+                var totalActive = Children.Sum(c => c.ActiveMessageCount);
+                var totalDead = Children.Sum(c => c.DeadLetterMessageCount);
+                var totalTransfer = Children.Sum(c => c.ScheduledMessageCount);
+                MessageCountDisplay = $"Active: {totalActive} | Dead: {totalDead} | Transfer: {totalTransfer}";
+                break;
+            case ResourceType.Subscription:
+                MessageCountDisplay = $"Active: {ActiveMessageCount} | Dead: {DeadLetterMessageCount} | Transfer: {ScheduledMessageCount}";
+                break;
+            default:
+                MessageCountDisplay = string.Empty;
+                break;
+        }
     }
 } 
