@@ -135,21 +135,38 @@ public partial class ExplorerViewModel : ObservableObject
         {
             foreach (var resource in Resources)
             {
+                Debug.WriteLine($"Processing resource: {resource.Name} of type {resource.Type}");
+                
                 if (resource.Type == ResourceType.Queue)
                 {
+                    Debug.WriteLine($"Fetching counts for queue: {resource.Name}");
                     var counts = await _serviceBusService.GetMessageCountsAsync(resource.Name);
+                    Debug.WriteLine($"Got counts for {resource.Name} - Active: {counts.Active}, Dead: {counts.DeadLetter}, Scheduled: {counts.Scheduled}");
+                    
+                    // Set all counts at once to trigger a single update
                     resource.ActiveMessageCount = counts.Active;
                     resource.DeadLetterMessageCount = counts.DeadLetter;
                     resource.ScheduledMessageCount = counts.Scheduled;
+                    resource.UpdateMessageCountDisplay(); // Force an update
+                    
+                    Debug.WriteLine($"Updated counts for {resource.Name} - MessageCountDisplay: {resource.MessageCountDisplay}");
                 }
                 else if (resource.Type == ResourceType.Topic)
                 {
+                    Debug.WriteLine($"Processing topic: {resource.Name} with {resource.Children.Count} subscriptions");
                     foreach (var subscription in resource.Children)
                     {
+                        Debug.WriteLine($"Fetching counts for subscription: {subscription.Name}");
                         var counts = await _serviceBusService.GetMessageCountsAsync($"{resource.Name}/{subscription.Name}");
+                        Debug.WriteLine($"Got counts for {subscription.Name} - Active: {counts.Active}, Dead: {counts.DeadLetter}, Transfer: {counts.Scheduled}");
+                        
+                        // Set all counts at once to trigger a single update
                         subscription.ActiveMessageCount = counts.Active;
                         subscription.DeadLetterMessageCount = counts.DeadLetter;
                         subscription.ScheduledMessageCount = counts.Scheduled;
+                        subscription.UpdateMessageCountDisplay(); // Force an update
+                        
+                        Debug.WriteLine($"Updated counts for subscription {subscription.Name} - MessageCountDisplay: {subscription.MessageCountDisplay}");
                     }
                 }
             }
