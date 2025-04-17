@@ -68,7 +68,7 @@ public partial class MainViewModel : ObservableObject
         Debug.WriteLine("Application started");
     }
 
-    private void OnResourceSelected(ServiceBusResourceItem? resource)
+    private void OnResourceSelected(ServiceBusResourceItem resource)
     {
         Debug.WriteLine($"MainViewModel.OnResourceSelected: {resource?.Name}");
         SelectedResource = resource;
