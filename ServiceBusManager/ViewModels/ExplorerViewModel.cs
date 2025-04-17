@@ -13,8 +13,11 @@ public partial class ExplorerViewModel : ObservableObject
     private readonly ILoggingService _loggingService;
     private readonly IServiceBusService _serviceBusService;
     private readonly ConnectionModalViewModel _connectionModalViewModel;
-    private readonly PeriodicTimer _refreshTimer;
+    private PeriodicTimer? _refreshTimer;
     private readonly CancellationTokenSource _cancellationTokenSource = new();
+    private readonly TimeSpan _refreshInterval = TimeSpan.FromSeconds(60);
+    private DateTime _lastRefreshTime;
+    private Task? _progressUpdateTask;
 
     [ObservableProperty]
     private ObservableCollection<ServiceBusResourceItem> resources = new();
@@ -24,6 +27,12 @@ public partial class ExplorerViewModel : ObservableObject
 
     [ObservableProperty]
     private bool isRefreshing;
+
+    [ObservableProperty]
+    private double refreshProgress;
+
+    [ObservableProperty]
+    private bool isConnected;
 
     public event Action<ServiceBusResourceItem> ResourceSelected;
 
@@ -36,12 +45,60 @@ public partial class ExplorerViewModel : ObservableObject
         _serviceBusService = serviceBusService;
         _connectionModalViewModel = connectionModalViewModel;
         
-        // Initialize refresh timer (every 60 seconds)
-        _refreshTimer = new PeriodicTimer(TimeSpan.FromSeconds(60));
-        StartPeriodicRefresh();
-        
         // Load resources when created
         LoadResourcesCommand.Execute(null);
+    }
+    
+    private void StartTimers()
+    {
+        if (_refreshTimer != null) return; // Already started
+
+        _lastRefreshTime = DateTime.Now;
+        
+        // Initialize refresh timer
+        _refreshTimer = new PeriodicTimer(_refreshInterval);
+        StartPeriodicRefresh();
+        
+        // Start progress update timer
+        StartProgressUpdateTimer();
+    }
+    
+    private void UpdateConnectionState()
+    {
+        IsConnected = _serviceBusService.IsConnected;
+    }
+    
+    private void StartProgressUpdateTimer()
+    {
+        _progressUpdateTask = Task.Run(async () =>
+        {
+            try
+            {
+                while (!_cancellationTokenSource.Token.IsCancellationRequested)
+                {
+                    await Task.Delay(100, _cancellationTokenSource.Token);
+                    if (IsConnected)
+                    {
+                        var elapsed = DateTime.Now - _lastRefreshTime;
+                        var newProgress = Math.Min(1.0, elapsed.TotalMilliseconds / _refreshInterval.TotalMilliseconds);
+                        
+                        // Only update if there's a meaningful change
+                        if (Math.Abs(newProgress - RefreshProgress) > 0.001)
+                        {
+                            RefreshProgress = newProgress;
+                        }
+                    }
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                // Timer was cancelled, this is expected
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error in progress update timer: {ex.Message}");
+            }
+        }, _cancellationTokenSource.Token);
     }
     
     private async void StartPeriodicRefresh()
@@ -72,6 +129,7 @@ public partial class ExplorerViewModel : ObservableObject
     {
         if (!_serviceBusService.IsConnected || IsRefreshing) return;
         
+        Debug.WriteLine("Starting refresh...");
         IsRefreshing = true;
         try
         {
@@ -96,6 +154,9 @@ public partial class ExplorerViewModel : ObservableObject
                 }
             }
             
+            Debug.WriteLine("Refresh completed, resetting progress...");
+            _lastRefreshTime = DateTime.Now;
+            RefreshProgress = 0;
             _loggingService.AddLog("Message counts refreshed");
         }
         catch (Exception ex)
@@ -132,6 +193,13 @@ public partial class ExplorerViewModel : ObservableObject
             
             // Initial refresh of message counts
             await RefreshMessageCountsAsync();
+
+            // Update connection state and start timers after successful load
+            UpdateConnectionState();
+            if (IsConnected)
+            {
+                StartTimers();
+            }
         }
         catch (Exception ex)
         { 
@@ -194,7 +262,16 @@ public partial class ExplorerViewModel : ObservableObject
     public void Dispose()
     {
         _cancellationTokenSource.Cancel();
-        _refreshTimer.Dispose();
+        if (_refreshTimer != null)
+        {
+            _refreshTimer.Dispose();
+            _refreshTimer = null;
+        }
+        
+        // Wait for the progress update task to complete
+        _progressUpdateTask?.Wait();
+        _progressUpdateTask = null;
+        
         _cancellationTokenSource.Dispose();
     }
 } 

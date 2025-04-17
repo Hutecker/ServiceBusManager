@@ -5,25 +5,34 @@
              xmlns:models="clr-namespace:ServiceBusManager.Models"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:converters="clr-namespace:ServiceBusManager.Converters"
+             xmlns:controls="clr-namespace:ServiceBusManager.Controls"
              x:Class="ServiceBusManager.Views.ExplorerView"
              x:DataType="vm:ExplorerViewModel">
 
-    <ContentPage.Resources>
+    <ContentView.Resources>
         <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
-    </ContentPage.Resources>
+    </ContentView.Resources>
 
     <Grid RowDefinitions="Auto, *">
         <!-- Header with buttons -->
-        <Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto" Padding="10">
-            <Label Text="Explorer" FontSize="16" FontAttributes="Bold" Grid.Column="0" />
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto,Auto" Padding="10">
+            <Label Text="Explorer" FontSize="16" FontAttributes="Bold" VerticalOptions="Center" />
             
-            <Button Grid.Column="1" 
+            <controls:RefreshTimerIndicator Grid.Column="1" 
+                                          Progress="{Binding RefreshProgress}"
+                                          Height="35"
+                                          Width="60"
+                                          Margin="0,0,10,0"
+                                          IsVisible="{Binding IsConnected}" />
+            
+            <Button Grid.Column="2" 
                     Text="Refresh"
                     Command="{Binding RefreshMessageCountsCommand}"
                     IsEnabled="{Binding IsRefreshing, Converter={StaticResource InverseBooleanConverter}}"
-                    Margin="0,0,5,0" />
+                    IsVisible="{Binding IsConnected}"
+                    Margin="0,0,10,0" />
             
-            <Button Grid.Column="2" 
+            <Button Grid.Column="3" 
                     Text="+" 
                     Command="{Binding ShowConnectionDialogCommand}" />
         </Grid>
